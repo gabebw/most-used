@@ -23,12 +23,9 @@ import Control.Applicative ((<$>), (<*>), (*>), pure)
 --
 -- The parser would return:
 -- [Node "git save", Node "gcm 'more", Extra "whee", Extra "g'"].
-data Item = Item { expr :: String }
-          | Extra { expr :: String }
-
-instance Show Item where
-    show (Item s) = "Item " ++ show s
-    show (Extra s) = "Extra " ++ show s
+data Item = Item { command :: String, arguments :: String }
+          | Extra { extra :: String }
+          deriving Show
 
 -- 1 single-line history item
 test1 :: String
@@ -58,13 +55,13 @@ parse = either (const []) gather . evaluate
 gather :: [Item] -> [Item]
 -- Add a newline because by definition, there was a newline between the Item and
 -- its Extra.
-gather (Item n:Extra e:ns) = gather $ Item (n ++ "\n" ++ e):ns
+gather (Item c a:Extra e:is) = gather $ Item c (a ++ "\n" ++ e):is
 -- Pass over the first node and keep processing
-gather (Item n:Item o:ns) = Item n:gather (Item o : ns)
+gather (Item c a:Item c2 a2:is) = (Item c a):gather (Item c2 a2 : is)
 -- This shouldn't ever happen
 gather ns@(Extra _:_) = error "This shouldn't happen"
 -- Done processing
-gather ns@[Item _] = ns
+gather is@[Item _ _] = is
 
 evaluate :: String -> Either ParseError [Item]
 evaluate = P.parse parser "(unknown)"
@@ -85,5 +82,7 @@ lineParser = do
     char ':'
     many1 digit
     char ';'
-    expr <- many (noneOf "\n")
-    return $ Item expr
+    command <- many1 (noneOf " \t\n")
+    spaces
+    arguments <- many1 (noneOf "\n")
+    return $ Item command arguments

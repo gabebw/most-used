@@ -47,7 +47,7 @@ gather (Item n:Extra e:ns) = gather $ Item (n ++ "\n" ++ e):ns
 -- Pass over the first node and keep processing
 gather (Item n:Item o:ns) = Item n:gather (Item o : ns)
 -- This shouldn't ever happen
-gather ns@(Extra e:_) = gather ns
+gather ns@(Extra _:_) = error "This shouldn't happen"
 -- Done processing
 gather ns@[Item _] = ns
 

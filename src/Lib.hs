@@ -1,12 +1,12 @@
 module Lib
-    ( Lib.parse
+    ( parseHistory
     , test1
     , test2
     , test3
     ) where
 
 import Control.Monad (void)
-import Text.ParserCombinators.Parsec as P
+import Text.ParserCombinators.Parsec
 import Text.Parsec.Char
 import Control.Applicative ((<$>), (<*>), (*>), pure)
 
@@ -29,11 +29,11 @@ test3 = ": 1401927488:0;gcm 'Initial commit'" ++ "\n" ++
     "x" ++ "\n" ++
     "g'"
 
-parse :: String -> [Item]
-parse = either (const []) id . evaluate
+parseHistory :: String -> [Item]
+parseHistory = either (const []) id . evaluate
 
 evaluate :: String -> Either ParseError [Item]
-evaluate = P.parse parser "(unknown)"
+evaluate = parse parser "(unknown)"
 
 parser :: Parser [Item]
 parser = many lineParser

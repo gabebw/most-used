@@ -8,7 +8,6 @@ module Lib
 import Control.Monad (void)
 import Text.ParserCombinators.Parsec
 import Text.Parsec.Char
-import Control.Applicative ((<$>), (<*>), (*>), pure)
 
 data Item = Item { command :: String, arguments :: String }
           deriving Show

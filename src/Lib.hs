@@ -3,27 +3,38 @@ module Lib
     , test1
     , test2
     , test3
+    , test4
+    , singleArgumentParser
     ) where
 
+import Data.Char
 import Control.Monad (void)
 import Text.ParserCombinators.Parsec
 import Text.Parsec.Char
 
-data Item = Item { command :: String, arguments :: String }
-          deriving Show
+data Item = Item { command :: String, arguments :: [Argument] }
+            deriving Show
 
--- 1 single-line history item
+data Argument = DoubleQuoted String
+              | SingleQuoted String
+              | NotQuoted String
+              -- Delete Backticks and make it CommandSubstitution too?
+              | Backticks String
+              | CommandSubstitution String
+              deriving Show
+
 test1 :: String
-test1 = ": 1401927488:0;gcm 'You need jq too'"
+test1 = ": 1401927488:0;cool \"one\" 'two' three $(four substitution) `five ticks`"
 
--- 2 single-line history items
 test2 :: String
-test2 = ": 1401929181:0;gcm 'Extract methods'" ++ "\n" ++
+test2 = ": 1401927488:0;cool arg"
+
+test3 :: String
+test3 = ": 1401927488:0;cool \"one\" 'two' three" ++ "\n" ++
     ": 1401929212:0;ls"
 
--- 1 single-line history item and 1 multi-line history item
-test3 :: String
-test3 = ": 1401927488:0;gcm 'Initial commit'" ++ "\n" ++
+test4 :: String
+test4 = ": 1401927488:0;gcm 'Initial commit'" ++ "\n" ++
     ": 1401929040:0;gcm 'more tips" ++ "\n" ++
     "x" ++ "\n" ++
     "g'"
@@ -53,10 +64,33 @@ itemParser = do
     char ':'
     many1 digit
     char ';'
-    command <- many1 (noneOf " \t\n")
+    command <- many1 notSpace
     spaces
-    arguments <- manyTill anyChar endOfItem
+    arguments <- manyTill separatedArgumentsParser endOfItem
     return $ Item command arguments
+
+separatedArgumentsParser :: Parser Argument
+separatedArgumentsParser = singleArgumentParser <* many space
+
+notSpace :: Parser Char
+notSpace = satisfy (not . isSpace)
+
+singleArgumentParser :: Parser Argument
+singleArgumentParser = do
+    (DoubleQuoted <$> surroundedBy "\"")
+    <|> (SingleQuoted <$> surroundedBy "'")
+    <|> (Backticks <$> surroundedBy "`")
+    <|> (CommandSubstitution <$> (char '$' *> surroundedByParens))
+    <|> (NotQuoted <$> many1 allowedCharsInArguments)
+
+allowedCharsInArguments :: Parser Char
+allowedCharsInArguments = satisfy (\c -> not (isSpace c) && isPrint c)
+
+surroundedBy :: String -> Parser String
+surroundedBy s = between (string s) (string s) (many $ noneOf s)
+
+surroundedByParens :: Parser String
+surroundedByParens = between (char '(') (char ')') (many $ noneOf "()")
 
 newItemStart :: Parser String
 newItemStart = string ": "

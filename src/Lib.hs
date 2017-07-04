@@ -1,5 +1,8 @@
 module Lib
     ( Lib.parse
+    , test1
+    , test2
+    , test3
     ) where
 
 import Text.ParserCombinators.Parsec as P
@@ -27,9 +30,21 @@ instance Show Item where
     show (Item s) = "Item " ++ show s
     show (Extra s) = "Extra " ++ show s
 
-s = ": 1401927488:0;gcm 'You need jq too'"
-ss = ": 1401929181:0;gcm 'Extract methods'\n: 1401929212:0;gcm 'Tell people if they are unranked for a repo'"
-sss = ": 1401927488:0;gcm 'You need jq too'\n: 1401929040:0;gcm 'more tips\nx\ng'"
+-- 1 single-line history item
+test1 :: String
+test1 = ": 1401927488:0;gcm 'You need jq too'"
+
+-- 2 single-line history items
+test2 :: String
+test2 = ": 1401929181:0;gcm 'Extract methods'" ++ "\n" ++
+    ": 1401929212:0;gcm 'Mention repo'"
+
+-- 1 single-line history item and 1 multi-line history item
+test3 :: String
+test3 = ": 1401927488:0;gcm 'Initial commit'" ++ "\n" ++
+    ": 1401929040:0;gcm 'more tips" ++ "\n" ++
+    "x" ++ "\n" ++
+    "g'"
 
 parse :: String -> [Item]
 parse = either (const []) gather . evaluate

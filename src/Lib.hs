@@ -61,9 +61,7 @@ newItemStart :: Parser String
 newItemStart = string ": "
 
 extraParser :: Parser Item
-extraParser = do
-    expr <- many (noneOf "\n")
-    return $ Extra expr
+extraParser = Extra <$> many (noneOf "\n")
 
 lineParser :: Parser Item
 lineParser = do

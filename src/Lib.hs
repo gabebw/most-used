@@ -37,6 +37,15 @@ evaluate = parse parser "(unknown)"
 parser :: Parser [Item]
 parser = many itemParser
 
+{-
+Example history items:
+
+: 1401927488:0;gcm 'You need jq too'
+: 1401929040:0;gcm 'more tips\
+\
+g'
+: 1401929181:0;gcm 'Extract methods'
+-}
 itemParser :: Parser Item
 itemParser = do
     newItemStart

@@ -35,10 +35,10 @@ evaluate :: String -> Either ParseError [Item]
 evaluate = parse parser "(unknown)"
 
 parser :: Parser [Item]
-parser = many lineParser
+parser = many itemParser
 
-lineParser :: Parser Item
-lineParser = do
+itemParser :: Parser Item
+itemParser = do
     newItemStart
     many1 digit
     char ':'

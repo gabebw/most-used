@@ -34,7 +34,7 @@ test1 = ": 1401927488:0;gcm 'You need jq too'"
 -- 2 single-line history items
 test2 :: String
 test2 = ": 1401929181:0;gcm 'Extract methods'" ++ "\n" ++
-    ": 1401929212:0;gcm 'Mention repo'"
+    ": 1401929212:0;ls"
 
 -- 1 single-line history item and 1 multi-line history item
 test3 :: String
@@ -84,5 +84,5 @@ lineParser = do
     char ';'
     command <- many1 (noneOf " \t\n")
     spaces
-    arguments <- many1 (noneOf "\n")
+    arguments <- many (noneOf "\n")
     return $ Item command arguments

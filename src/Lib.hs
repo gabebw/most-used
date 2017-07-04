@@ -37,9 +37,6 @@ evaluate = parse parser "(unknown)"
 parser :: Parser [Item]
 parser = many lineParser
 
-newItemStart :: Parser String
-newItemStart = string ": "
-
 lineParser :: Parser Item
 lineParser = do
     newItemStart
@@ -51,6 +48,9 @@ lineParser = do
     spaces
     arguments <- manyTill anyChar endOfItem
     return $ Item command arguments
+
+newItemStart :: Parser String
+newItemStart = string ": "
 
 -- lookAhead looks for (but does not consume) the start of the next item.
 -- If there's no next item, we should be at the end of the file.

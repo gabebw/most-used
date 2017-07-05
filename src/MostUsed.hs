@@ -1,10 +1,7 @@
-module Lib
+module MostUsed
     ( parseHistory
-    , test1
-    , test2
-    , test3
-    , test4
-    , singleArgumentParser
+    , Argument(..)
+    , Item(..)
     ) where
 
 import Data.Char
@@ -13,7 +10,7 @@ import Text.ParserCombinators.Parsec
 import Text.Parsec.Char
 
 data Item = Item { command :: String, arguments :: [Argument] }
-            deriving Show
+            deriving (Show, Eq)
 
 data Argument = DoubleQuoted String
               | SingleQuoted String
@@ -21,23 +18,7 @@ data Argument = DoubleQuoted String
               -- Delete Backticks and make it CommandSubstitution too?
               | Backticks String
               | CommandSubstitution String
-              deriving Show
-
-test1 :: String
-test1 = ": 1401927488:0;cool \"one\" 'two' three $(four substitution) `five ticks`"
-
-test2 :: String
-test2 = ": 1401927488:0;cool arg"
-
-test3 :: String
-test3 = ": 1401927488:0;cool \"one\" 'two' three" ++ "\n" ++
-    ": 1401929212:0;ls"
-
-test4 :: String
-test4 = ": 1401927488:0;gcm 'Initial commit'" ++ "\n" ++
-    ": 1401929040:0;gcm 'more tips" ++ "\n" ++
-    "x" ++ "\n" ++
-    "g'"
+              deriving (Show, Eq)
 
 parseHistory :: String -> [Item]
 parseHistory = either (const []) id . evaluate

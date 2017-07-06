@@ -4,10 +4,10 @@ module MostUsed
     , Item(..)
     ) where
 
-import Data.Char
-import Control.Monad (void)
-import Text.ParserCombinators.Parsec
-import Text.Parsec.Char
+import Data.Char (isSpace, isPrint)
+import Text.Megaparsec
+import Text.Megaparsec.Char
+import Text.Megaparsec.String
 
 data Item = Item { command :: String, arguments :: [Argument] }
             deriving (Show, Eq)
@@ -15,68 +15,55 @@ data Item = Item { command :: String, arguments :: [Argument] }
 data Argument = DoubleQuoted String
               | SingleQuoted String
               | NotQuoted String
-              -- Delete Backticks and make it CommandSubstitution too?
               | Backticks String
               | CommandSubstitution String
               deriving (Show, Eq)
 
-parseHistory :: String -> [Item]
-parseHistory = either (const []) id . evaluate
+parseHistory :: String -> Either String [Item]
+parseHistory s = history $ lines s
 
-evaluate :: String -> Either ParseError [Item]
-evaluate = parse parser "(unknown)"
+history :: [String] -> Either String [Item]
+history (s:ss) = case parse itemParser "(unknown)" s of
+                        (Left err) -> Left $ parseErrorPretty err
+                        (Right x) -> (:) <$> Right x <*> history ss
+history [] = Right []
 
-parser :: Parser [Item]
-parser = many itemParser
-
-{-
-Example history items:
-
-: 1401927488:0;gcm 'You need jq too'
-: 1401929040:0;gcm 'more tips\
-\
-g'
-: 1401929181:0;gcm 'Extract methods'
--}
 itemParser :: Parser Item
 itemParser = do
-    newItemStart
-    many1 digit
-    char ':'
-    many1 digit
-    char ';'
-    command <- many1 notSpace
-    spaces
-    arguments <- manyTill separatedArgumentsParser endOfItem
+    char ' '
+    some digitChar -- command number
+    string "  "
+    command <- some (satisfy (not . isSpace))
+    space
+    arguments <- argumentsParser
+    eof
     return $ Item command arguments
 
-separatedArgumentsParser :: Parser Argument
-separatedArgumentsParser = singleArgumentParser <* many space
+argumentsParser :: Parser [Argument]
+argumentsParser = singleArgumentParser `sepBy` separator
 
-notSpace :: Parser Char
-notSpace = satisfy (not . isSpace)
+separator :: Parser [String]
+separator = some (try escapedNewline <|> some spaceChar)
 
 singleArgumentParser :: Parser Argument
-singleArgumentParser = do
-    (DoubleQuoted <$> surroundedBy "\"")
-    <|> (SingleQuoted <$> surroundedBy "'")
-    <|> (Backticks <$> surroundedBy "`")
-    <|> (CommandSubstitution <$> (char '$' *> surroundedByParens))
-    <|> (NotQuoted <$> many1 allowedCharsInArguments)
+singleArgumentParser =
+    DoubleQuoted <$> surroundedBy "\""
+    <|> SingleQuoted <$> surroundedBy "'"
+    <|> Backticks <$> surroundedBy "`"
+    <|> CommandSubstitution <$> (char '$' *> surroundedByParens)
+    <|> NotQuoted <$> some allowedCharsInArguments
+    <?> "single argument parser"
 
 allowedCharsInArguments :: Parser Char
 allowedCharsInArguments = satisfy (\c -> not (isSpace c) && isPrint c)
 
 surroundedBy :: String -> Parser String
 surroundedBy s = between (string s) (string s) (many $ noneOf s)
+    <?> ("surrounded by " ++ s)
 
 surroundedByParens :: Parser String
 surroundedByParens = between (char '(') (char ')') (many $ noneOf "()")
+    <?> "surrounded by parentheses"
 
-newItemStart :: Parser String
-newItemStart = string ": "
-
--- lookAhead looks for (but does not consume) the start of the next item.
--- If there's no next item, we should be at the end of the file.
-endOfItem :: Parser ()
-endOfItem = void (lookAhead newItemStart) <|> eof
+escapedNewline :: Parser String
+escapedNewline = string "\\n"

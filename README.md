@@ -1,15 +1,21 @@
 # most-used
 
-This can parse the contents of `~/.zsh_history`.
+This takes input from Zsh's `fc` command and parses it to find your most-used
+commands.
 
-It assumes you have `setopt extended_history`, so that your `~/.zsh_history`
-looks like this:
+`fc` output looks like this:
 
 ```
-: 1407468397:0;git shortlog -s |\
- cut -f1 |\
- spark
-: 1407468436:0;g show 3435d20
+  474  g push origin master
+  475  open file
+  476  echo hello
+  477  fc -l | tail -4
+```
+
+Usage (eventually):
+
+```
+$ fc -l 1 | most-used
 ```
 
 ## Future Goals

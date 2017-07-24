@@ -30,7 +30,7 @@ history [] = Right []
 
 itemParser :: Parser Item
 itemParser = do
-    char ' '
+    some spaceChar
     some digitChar -- command number
     string "  "
     command <- some (satisfy (not . isSpace))

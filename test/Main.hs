@@ -5,10 +5,13 @@ import MostUsed
 import Test.Hspec
 
 commandNumber :: String
-commandNumber = " 452  "
+commandNumber = "  452  "
 
 cmd :: String -> String
 cmd s = commandNumber ++ s
+
+cmd2 :: String -> String
+cmd2 s = "    1  " ++ s
 
 main :: IO ()
 main = hspec spec
@@ -22,6 +25,11 @@ spec = do
         describe "with a single item" $ do
             it "parses a command with no arguments" $ do
                 let s = cmd "cmd"
+                let result = Item "cmd" []
+                parseHistory s `shouldBe` Right [result]
+
+            it "parses a command with no arguments and a low number" $ do
+                let s = cmd2 "cmd"
                 let result = Item "cmd" []
                 parseHistory s `shouldBe` Right [result]
 

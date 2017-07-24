@@ -1,10 +1,12 @@
 module MostUsed
     ( parseHistory
+    , parseHistory'
     , Argument(..)
     , Item(..)
     ) where
 
 import Data.Char (isSpace, isPrint)
+import Data.Either (rights)
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import Text.Megaparsec.String
@@ -19,6 +21,10 @@ data Argument = DoubleQuoted String
               | CommandSubstitution String
               | ProcessSubstitution String
               deriving (Show, Eq)
+
+-- Like parseHistory, but just skips over lines that can't be parsed
+parseHistory' :: String -> [Item]
+parseHistory' s = rights $ map (parse itemParser "(unknown)") $ lines s
 
 parseHistory :: String -> Either String [Item]
 parseHistory s = history $ lines s

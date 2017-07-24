@@ -7,6 +7,9 @@ import Test.Hspec
 commandNumber :: String
 commandNumber = "  452  "
 
+unparseableCommand :: String
+unparseableCommand = cmd "foo(){\\n # -X = \"whatever\", blah\\n"
+
 cmd :: String -> String
 cmd s = commandNumber ++ s
 
@@ -21,6 +24,16 @@ escapedNewline = "\\n"
 
 spec :: Spec
 spec = do
+    describe "parseHistory'" $ do
+        it "ignores a single unparseable command" $ do
+            parseHistory' unparseableCommand `shouldBe` []
+
+        it "ignores an unparseable command but parses the good one" $ do
+            let s1 = unparseableCommand
+            let s2 = cmd "cmd 'a'"
+            let s = intercalate "\n" [s1, s2]
+            parseHistory' s `shouldBe` [Item "cmd" [SingleQuoted "a"]]
+
     describe "parseHistory" $ do
         describe "with a single item" $ do
             it "parses a command with no arguments" $ do

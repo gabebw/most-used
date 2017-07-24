@@ -7,9 +7,7 @@ import Data.Ord (comparing, Down(..))
 main :: IO ()
 main = do
     stdin <- getContents
-    case parseHistory stdin of
-      (Left err) -> putStrLn err
-      (Right items) -> print $ findMostUsed items
+    print $ findMostUsed $ parseHistory' stdin
 
 findMostUsed :: [Item] -> [(Int, String)]
 findMostUsed items = reverseSort $

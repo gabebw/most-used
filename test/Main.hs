@@ -58,6 +58,12 @@ spec = do
                 let result = Item "cmd" [CommandSubstitution "arg x"]
                 parseHistory s `shouldBe` Right [result]
 
+            it "parses a command with process substitution" $ do
+                let s = cmd "cmd <(one) <(two)"
+                let result = Item "cmd" [ProcessSubstitution "one"
+                                        , ProcessSubstitution "two"]
+                parseHistory s `shouldBe` Right [result]
+
             it "parses a command with a variety of arguments" $ do
                 let s = cmd "cmd one `two` '3 x' \"4 y\" $(arg)"
                 let result = Item "cmd" [NotQuoted "one"

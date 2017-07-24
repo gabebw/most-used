@@ -17,6 +17,7 @@ data Argument = DoubleQuoted String
               | NotQuoted String
               | Backticks String
               | CommandSubstitution String
+              | ProcessSubstitution String
               deriving (Show, Eq)
 
 parseHistory :: String -> Either String [Item]
@@ -51,6 +52,7 @@ singleArgumentParser =
     <|> SingleQuoted <$> surroundedBy "'"
     <|> Backticks <$> surroundedBy "`"
     <|> CommandSubstitution <$> (char '$' *> surroundedByParens)
+    <|> ProcessSubstitution <$> (char '<' *> surroundedByParens)
     <|> NotQuoted <$> some allowedCharsInArguments
     <?> "single argument parser"
 

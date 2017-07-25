@@ -16,8 +16,10 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     MostUsed
+                     , MostUsed.CLI
   build-depends:       base >= 4.7 && < 5
                      , megaparsec
+                     , optparse-applicative
   default-language:    Haskell2010
 
 executable most-used-exe

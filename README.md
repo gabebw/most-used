@@ -7,6 +7,8 @@ To try it out:
 
 ```
 ./bin/run
+./bin/run --help
+./bin/run --include-first-argument=git --include-first-argument=spring
 ```
 
 `fc` output looks like this:

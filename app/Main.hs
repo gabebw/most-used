@@ -1,26 +1,40 @@
+{-# LANGUAGE NamedFieldPuns #-}
 module Main where
 
-import MostUsed
+import MostUsed as M
+import MostUsed.CLI
 import Data.List
 import Data.Ord (comparing, Down(..))
 
 main :: IO ()
 main = do
+    Options{oIncludeFirstArgument} <- parseCLI
     stdin <- getContents
-    let stats = findMostUsed $ parseHistory' stdin
+    let stats = findMostUsed oIncludeFirstArgument $ parseHistory' stdin
     putStr $ prettyPrint stats
 
 prettyPrint :: [(Int, String)] -> String
-prettyPrint stats = unlines $ map (\(n, s) -> show n ++ " " ++ s) stats
+prettyPrint stats = unlines $ map (\(n, count) -> show n ++ " " ++ count) stats
 
-findMostUsed :: [Item] -> [(Int, String)]
-findMostUsed items = reverseSort $
+findMostUsed :: [Command] -> [Item] -> [(Int, String)]
+findMostUsed includeFirstArgument items = reverseSort $
         map toTuple $
-        groupBy sameCommand $
-        sortBy (comparing command) items
+        group $
+        sort $
+        withFirstArg includeFirstArgument items
     where
-        toTuple is@(Item c _:_) = (length is, c)
-        sameCommand (Item c1 _) (Item c2 _) = c1 == c2
+        toTuple xs@(x:_) = (length xs, x)
+
+-- Used when including first arg for some items. Dual-count them so one Item
+-- becomes "command" and "command firstArg".
+-- Can be slow: O(size(includeFirstArgument) * size(items))
+withFirstArg :: [Command] -> [Item] -> [String]
+withFirstArg [] is = map M.command is
+withFirstArg _ [] = []
+withFirstArg includingFirst (Item c []:is) = c:withFirstArg includingFirst is
+withFirstArg includingFirst ((Item c (a:_)):is) = prefix ++ withFirstArg includingFirst is
+    where
+        prefix = if c `elem` includingFirst then [c ++ " " ++ show a, c] else [c]
 
 -- Faster than `reverse . sort`:
 -- https://ro-che.info/articles/2016-04-02-descending-sort-haskell

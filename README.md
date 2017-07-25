@@ -26,6 +26,7 @@ $ fc -l 1 | most-used
 
 ## Future Goals
 
-* [ ] Print out which commands are used the most
+* [x] Print out which commands are used the most
+* [ ] Prettily format the output
 * [ ] Include the first argument as part of some commands (e.g. "spring rspec")
-* [ ] Parse the `~/.zsh_history` file directly, instead of taking in strings
+* [x] Parse the `~/.zsh_history` file directly, instead of taking in strings

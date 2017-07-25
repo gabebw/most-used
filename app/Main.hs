@@ -7,7 +7,11 @@ import Data.Ord (comparing, Down(..))
 main :: IO ()
 main = do
     stdin <- getContents
-    print $ findMostUsed $ parseHistory' stdin
+    let stats = findMostUsed $ parseHistory' stdin
+    putStr $ prettyPrint stats
+
+prettyPrint :: [(Int, String)] -> String
+prettyPrint stats = unlines $ map (\(n, s) -> show n ++ " " ++ s) stats
 
 findMostUsed :: [Item] -> [(Int, String)]
 findMostUsed items = reverseSort $

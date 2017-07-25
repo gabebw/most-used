@@ -3,6 +3,12 @@
 This takes input from Zsh's `fc` command and parses it to find your most-used
 commands.
 
+To try it out:
+
+```
+./bin/run
+```
+
 `fc` output looks like this:
 
 ```

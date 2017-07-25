@@ -71,6 +71,11 @@ spec = do
                 let result = Item "cmd" [CommandSubstitution "arg x"]
                 parseHistory s `shouldBe` Right [result]
 
+            it "parses a command preceded by a backslash" $ do
+                let s = cmd "\\psql arg"
+                let result = Item "\\psql" [NotQuoted "arg"]
+                parseHistory s `shouldBe` Right [result]
+
             it "parses a command with process substitution" $ do
                 let s = cmd "cmd <(one) <(two)"
                 let result = Item "cmd" [ProcessSubstitution "one"

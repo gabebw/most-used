@@ -35,26 +35,34 @@ instance Show Argument where
 
 -- Like parseHistory, but just skips over lines that can't be parsed
 parseHistory' :: String -> [Item]
-parseHistory' s = rights $ map (parse itemParser "(unknown)") $ lines s
+parseHistory' s = concat $ rights $ map (parse lineParser "(unknown)") $ lines s
 
 parseHistory :: String -> Either String [Item]
-parseHistory s = history $ lines s
+parseHistory s = concat <$> history (lines s)
 
-history :: [String] -> Either String [Item]
-history (s:ss) = case parse itemParser "(unknown)" s of
+history :: [String] -> Either String [[Item]]
+history (s:ss) = case parse lineParser "(unknown)" s of
                    (Left err) -> Left $ parseErrorPretty err
                    (Right x) -> (:) <$> Right x <*> history ss
 history [] = Right []
 
+lineParser :: Parser [Item]
+lineParser = do
+    some spaceChar
+    some digitChar -- history number
+    string "  "
+    items <- itemParser `sepBy` pipeParser
+    eof
+    return items
+
+pipeParser :: Parser ()
+pipeParser = space >> char '|' >> space
+
 itemParser :: Parser Item
 itemParser = do
-    some spaceChar
-    some digitChar -- command number
-    string "  "
     command <- some (satisfy (not . isSpace))
     space
     arguments <- argumentsParser
-    eof
     return $ Item command arguments
 
 argumentsParser :: Parser [Argument]
@@ -74,7 +82,8 @@ singleArgumentParser =
     <?> "single argument parser"
 
 allowedCharsInArguments :: Parser Char
-allowedCharsInArguments = satisfy (\c -> not (isSpace c) && isPrint c)
+allowedCharsInArguments = satisfy (\c ->
+    c /= '|' && not (isSpace c) && isPrint c)
 
 surroundedBy :: String -> Parser String
 surroundedBy s = between (string s) (string s) (many $ noneOf s)

@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     MostUsed
                      , MostUsed.CLI
+                     , MostUsed.Types
   build-depends:       base >= 4.7 && < 5
                      , megaparsec == 5.2.0
                      , optparse-applicative == 0.13.2.0

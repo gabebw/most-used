@@ -1,37 +1,14 @@
 module MostUsed
     ( parseHistory
     , parseHistory'
-    , Command(..)
-    , Argument(..)
-    , Item(..)
     ) where
 
 import Data.Char (isSpace, isPrint)
 import Data.Either (rights)
+import MostUsed.Types
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import Text.Megaparsec.String
-
-type Command = String
-
-data Item = Item { command :: Command, arguments :: [Argument] }
-            deriving (Show, Eq)
-
-data Argument = DoubleQuoted String
-              | SingleQuoted String
-              | NotQuoted String
-              | Backticks String
-              | CommandSubstitution String
-              | ProcessSubstitution String
-              deriving (Eq)
-
-instance Show Argument where
-    show (DoubleQuoted s) = "\"" ++ s ++ "\""
-    show (SingleQuoted s) = "'" ++ s ++ "'"
-    show (NotQuoted s) = s
-    show (Backticks s) = "`" ++ s ++ "`"
-    show (CommandSubstitution s) = "$(" ++ s ++ ")"
-    show (ProcessSubstitution s) = "<(" ++ s ++ ")"
 
 -- Like parseHistory, but just skips over lines that can't be parsed
 parseHistory' :: String -> [Item]

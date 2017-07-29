@@ -4,8 +4,9 @@ module MostUsed.CLI
     )
     where
 
-import MostUsed
 import Data.Monoid ((<>))
+import MostUsed
+import MostUsed.Types
 import Options.Applicative
 
 data Options = Options

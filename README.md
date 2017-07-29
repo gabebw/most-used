@@ -6,22 +6,18 @@ commands.
 To try it out:
 
 ```
-./bin/run
-./bin/run --help
-./bin/run --include-first-argument=git --include-first-argument=spring
+$ brew tap gabebw/formulae
+$ brew install most-used
+$ most-used | head
 ```
 
-`fc` output looks like this:
+## Local development
 
-```
-  474  g push origin master
-  475  open file
-  476  echo hello
-  477  fc -l | tail -4
-```
+After changing something, you can run this to recompile and see the result of
+parsing history:
 
-Usage (eventually):
+    ./bin/run
 
-```
-$ fc -l 1 | most-used
-```
+You can also pass options:
+
+    ./bin/run --include-first-argument=git --include-first-argument=spring

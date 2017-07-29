@@ -24,63 +24,71 @@ escapedNewline = "\\n"
 
 spec :: Spec
 spec = do
-    describe "parseHistory'" $ do
+    describe "failures" $ do
+        it "returns a pretty error message" $ do
+            let s = "bad"
+            failures s `shouldBe` ["bad:1:1:\nunexpected 'b'\nexpecting white space\n"]
+
+        it "does not return any successfully parsed commands" $ do
+            let s = cmd "cmd 'a'"
+            failures s `shouldBe` []
+
+    describe "successes" $ do
         it "ignores a single unparseable command" $ do
-            parseHistory' unparseableCommand `shouldBe` []
+            successes unparseableCommand `shouldBe` []
 
         it "ignores an unparseable command but parses the good one" $ do
             let s1 = unparseableCommand
             let s2 = cmd "cmd 'a'"
             let s = intercalate "\n" [s1, s2]
-            parseHistory' s `shouldBe` [Item "cmd" [SingleQuoted "a"]]
+            successes s `shouldBe` [Item "cmd" [SingleQuoted "a"]]
 
-    describe "parseHistory" $ do
         describe "with a single item" $ do
             it "parses a command with no arguments" $ do
                 let s = cmd "cmd"
                 let result = Item "cmd" []
-                parseHistory s `shouldBe` Right [result]
+                successes s `shouldBe` [result]
 
             it "parses a command with no arguments and a low number" $ do
                 let s = cmd2 "cmd"
                 let result = Item "cmd" []
-                parseHistory s `shouldBe` Right [result]
+                successes s `shouldBe` [result]
 
             it "parses a command with one unquoted argument" $ do
                 let s = cmd "cmd arg"
                 let result = Item "cmd" [NotQuoted "arg"]
-                parseHistory s `shouldBe` Right [result]
+                successes s `shouldBe` [result]
 
             it "parses a command with one single-quoted argument" $ do
                 let s = cmd "cmd 'a r g'"
                 let result = Item "cmd" [SingleQuoted "a r g"]
-                parseHistory s `shouldBe` Right [result]
+                successes s `shouldBe` [result]
 
             it "parses a command with one double-quoted argument" $ do
                 let s = cmd "cmd \"a r g\""
                 let result = Item "cmd" [DoubleQuoted "a r g"]
-                parseHistory s `shouldBe` Right [result]
+                successes s `shouldBe` [result]
 
             it "parses a command with one backtick-ed argument" $ do
                 let s = cmd "cmd `arg`"
                 let result = Item "cmd" [Backticks "arg"]
-                parseHistory s `shouldBe` Right [result]
+                successes s `shouldBe` [result]
 
             it "parses a command with one $(argument)" $ do
                 let s = cmd "cmd $(arg x)"
                 let result = Item "cmd" [CommandSubstitution "arg x"]
-                parseHistory s `shouldBe` Right [result]
+                successes s `shouldBe` [result]
 
             it "parses a command preceded by a backslash" $ do
                 let s = cmd "\\psql arg"
                 let result = Item "\\psql" [NotQuoted "arg"]
-                parseHistory s `shouldBe` Right [result]
+                successes s `shouldBe` [result]
 
             it "parses a command with process substitution" $ do
                 let s = cmd "cmd <(one) <(two)"
                 let result = Item "cmd" [ProcessSubstitution "one"
                                         , ProcessSubstitution "two"]
-                parseHistory s `shouldBe` Right [result]
+                successes s `shouldBe` [result]
 
             it "parses a command with a variety of arguments" $ do
                 let s = cmd "cmd one `two` '3 x' \"4 y\" $(arg)"
@@ -89,25 +97,25 @@ spec = do
                                         , SingleQuoted "3 x"
                                         , DoubleQuoted "4 y"
                                         , CommandSubstitution "arg"]
-                parseHistory s `shouldBe` Right [result]
+                successes s `shouldBe` [result]
 
             it "parses a line with multiple items separated by a pipe" $ do
                 let s = cmd "c1 one |c2 `two`"
                 let result = [Item "c1" [NotQuoted "one"]
                              , Item "c2" [Backticks "two"]]
-                parseHistory s `shouldBe` Right result
+                successes s `shouldBe` result
 
             it "parses a line with @" $ do
                 let s = cmd "echo @gabebw"
                 let result = [Item "echo" [NotQuoted "@gabebw"]]
 
-                parseHistory s `shouldBe` Right result
+                successes s `shouldBe` result
 
             it "parses a line with $-quoting" $ do
                 let s = cmd "echo $' hello '"
                 let result = [Item "echo" [SingleQuoted " hello "]]
 
-                parseHistory s `shouldBe` Right result
+                successes s `shouldBe` result
 
         describe "with multiple items, each of which is on one line" $ do
             it "parses commands with a variety of arguments" $ do
@@ -120,13 +128,13 @@ spec = do
                                    , CommandSubstitution "arg"]
                 let i2 = Item "c2" [SingleQuoted "3 x"
                                    , DoubleQuoted "4 y"]
-                parseHistory s `shouldBe` Right [i1, i2, Item "c3" []]
+                successes s `shouldBe` [i1, i2, Item "c3" []]
 
         it "can parse something with a bare escaped newline" $ do
             let s = cmd "fc -lDt 1 \\n"
             let item = Item "fc" [NotQuoted "-lDt", NotQuoted "1"]
 
-            parseHistory s `shouldBe` Right [item]
+            successes s `shouldBe` [item]
 
         describe "with multiple items, not all of which are on one line" $ do
             it "parses commands with a variety of arguments" $ do
@@ -139,4 +147,4 @@ spec = do
                                    , CommandSubstitution "arg"]
                 let i2 = Item "c2" [SingleQuoted "3\\n x"
                                    , DoubleQuoted "4 \\ny"]
-                parseHistory s `shouldBe` Right [i1, i2, Item "c3" []]
+                successes s `shouldBe` [i1, i2, Item "c3" []]

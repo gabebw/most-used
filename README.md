@@ -21,3 +21,7 @@ parsing history:
 You can also pass options:
 
     ./bin/run --include-first-argument=git --include-first-argument=spring
+
+To print lines that failed to parse:
+
+    ./bin/run --debug

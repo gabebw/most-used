@@ -1,28 +1,25 @@
 module MostUsed
-    ( parseHistory
-    , parseHistory'
+    ( successes
+    , failures
     , module MostUsed.Types
     ) where
 
+import Data.Bifunctor
 import Data.Char (isSpace, isPrint)
-import Data.Either (rights)
+import Data.Either (lefts, rights)
 import MostUsed.Types
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import Text.Megaparsec.String
 
--- Like parseHistory, but just skips over lines that can't be parsed
-parseHistory' :: String -> [Item]
-parseHistory' s = concat $ rights $ map (parse items "(unknown)") $ lines s
+successes :: String -> [Item]
+successes = mconcat . rights . successesAndFailures . lines
 
-parseHistory :: String -> Either String [Item]
-parseHistory s = concat <$> history (lines s)
+failures :: String -> [String]
+failures = lefts . successesAndFailures . lines
 
-history :: [String] -> Either String [[Item]]
-history (s:ss) = case parse items "(unknown)" s of
-                   (Left err) -> Left $ parseErrorPretty err
-                   (Right x) -> (:) <$> Right x <*> history ss
-history [] = Right []
+successesAndFailures :: [String] -> [Either String [Item]]
+successesAndFailures = map (\s -> first parseErrorPretty $ parse items s s)
 
 items :: Parser [Item]
 items = do

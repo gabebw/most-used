@@ -10,6 +10,7 @@ import Options.Applicative
 
 data Options = Options
     { oIncludeFirstArgument :: [Command]
+    , oDebug :: Bool
     }
 
 parseCLI :: IO Options
@@ -26,9 +27,14 @@ withInfo opts h d f =
     info (helper <*> opts) $ header h <> progDesc d <> footer f
 
 parseOptions :: Parser Options
-parseOptions = Options <$> parseIncludeFirstArgument
+parseOptions = Options <$> parseIncludeFirstArgument <*> parseDebug
 
 parseIncludeFirstArgument :: Parser [String]
 parseIncludeFirstArgument = many $ strOption $
     long "include-first-argument"
     <> help "Count this command with its first argument (can be specified more than once)"
+
+parseDebug :: Parser Bool
+parseDebug = switch $
+    long "debug"
+    <> help "Print only lines that couldn't be parsed"

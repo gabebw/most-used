@@ -8,13 +8,26 @@ import MostUsed.CLI
 
 main :: IO ()
 main = do
-    Options{oIncludeFirstArgument} <- parseCLI
-    stdin <- getContents
-    let stats = findMostUsed oIncludeFirstArgument $ parseHistory' stdin
-    putStr $ prettyPrint stats
+    Options{oIncludeFirstArgument, oDebug} <- parseCLI
+    stdinContents <- getContents
+    let f = if oDebug
+            then displayFailures
+            else displaySuccesses oIncludeFirstArgument
+    f stdinContents
 
-prettyPrint :: [(Int, String)] -> String
-prettyPrint stats = unlines $ map (\(n, count) -> show n ++ " " ++ count) stats
+displaySuccesses :: [Command] -> String -> IO ()
+displaySuccesses oIncludeFirstArgument s = do
+    let results = successes s
+    let stats = prettyPrint $ findMostUsed oIncludeFirstArgument $ results
+    putStr $ unlines $ stats
+
+displayFailures :: String -> IO ()
+displayFailures s = do
+    putStrLn "\n!!! The following lines could not be parsed:\n\n"
+    putStrLn $ unlines $ failures s
+
+prettyPrint :: [(Int, String)] -> [String]
+prettyPrint stats = map (\(n, count) -> show n ++ " " ++ count) stats
 
 findMostUsed :: [Command] -> [Item] -> [(Int, String)]
 findMostUsed includeFirstArgument items = reverseSort $

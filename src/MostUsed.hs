@@ -42,8 +42,8 @@ parseHistory s = history $ lines s
 
 history :: [String] -> Either String [Item]
 history (s:ss) = case parse itemParser "(unknown)" s of
-                        (Left err) -> Left $ parseErrorPretty err
-                        (Right x) -> (:) <$> Right x <*> history ss
+                   (Left err) -> Left $ parseErrorPretty err
+                   (Right x) -> (:) <$> Right x <*> history ss
 history [] = Right []
 
 itemParser :: Parser Item

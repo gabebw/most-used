@@ -104,6 +104,12 @@ spec = do
                                    , DoubleQuoted "4 y"]
                 parseHistory s `shouldBe` Right [i1, i2, Item "c3" []]
 
+        it "can parse something with a bare escaped newline" $ do
+            let s = cmd "fc -lDt 1 \\n"
+            let item = Item "fc" [NotQuoted "-lDt", NotQuoted "1"]
+
+            parseHistory s `shouldBe` Right [item]
+
         describe "with multiple items, not all of which are on one line" $ do
             it "parses commands with a variety of arguments" $ do
                 let s1 = cmd "c1 one " ++ escapedNewline ++ "`tw" ++ escapedNewline ++ "no` $(arg)"

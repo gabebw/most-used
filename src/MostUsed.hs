@@ -58,7 +58,7 @@ itemParser = do
     return $ Item command arguments
 
 argumentsParser :: Parser [Argument]
-argumentsParser = singleArgumentParser `sepBy` separator
+argumentsParser = singleArgumentParser `sepEndBy` separator
 
 separator :: Parser [String]
 separator = some (try escapedNewline <|> some spaceChar)

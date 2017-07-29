@@ -26,12 +26,12 @@ data Argument = DoubleQuoted String
               deriving (Eq)
 
 instance Show Argument where
-    show (DoubleQuoted s) = s
-    show (SingleQuoted s) = s
+    show (DoubleQuoted s) = "\"" ++ s ++ "\""
+    show (SingleQuoted s) = "'" ++ s ++ "'"
     show (NotQuoted s) = s
-    show (Backticks s) = s
-    show (CommandSubstitution s) = s
-    show (ProcessSubstitution s) = s
+    show (Backticks s) = "`" ++ s ++ "`"
+    show (CommandSubstitution s) = "$(" ++ s ++ ")"
+    show (ProcessSubstitution s) = "<(" ++ s ++ ")"
 
 -- Like parseHistory, but just skips over lines that can't be parsed
 parseHistory' :: String -> [Item]

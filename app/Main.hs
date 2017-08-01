@@ -18,8 +18,8 @@ main = do
 displaySuccesses :: [Command] -> String -> IO ()
 displaySuccesses oIncludeFirstArgument s = do
     let results = successes s
-    let stats = prettyPrint $ findMostUsed oIncludeFirstArgument $ results
-    putStr $ unlines $ stats
+    let stats = prettyPrint $ findMostUsed oIncludeFirstArgument results
+    putStr $ unlines stats
 
 displayFailures :: String -> IO ()
 displayFailures s = do
@@ -45,7 +45,7 @@ withFirstArg :: [Command] -> [Item] -> [String]
 withFirstArg [] is = map M.command is
 withFirstArg _ [] = []
 withFirstArg includingFirst (Item c []:is) = c:withFirstArg includingFirst is
-withFirstArg includingFirst ((Item c (a:_)):is) = prefix ++ withFirstArg includingFirst is
+withFirstArg includingFirst (Item c (a:_):is) = prefix ++ withFirstArg includingFirst is
     where
         prefix = if c `elem` includingFirst then [c ++ " " ++ show a, c] else [c]
 

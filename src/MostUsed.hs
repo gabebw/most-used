@@ -49,8 +49,9 @@ singleArgument =
     DoubleQuoted <$> surroundedBy "\""
     <|> SingleQuoted <$> surroundedBy "'"
     <|> Backticks <$> surroundedBy "`"
-    <|> CommandSubstitution <$> (char '$' *> surroundedByParens)
+    <|> CommandSubstitution <$> (try (char '$' *> surroundedByParens))
     <|> ProcessSubstitution <$> (char '<' *> surroundedByParens)
+    <|> SingleQuoted <$> (char '$' *> surroundedBy "'")
     <|> NotQuoted <$> some allowedCharsInArguments
     <?> "single argument parser"
 

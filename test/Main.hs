@@ -97,6 +97,18 @@ spec = do
                              , Item "c2" [Backticks "two"]]
                 parseHistory s `shouldBe` Right result
 
+            it "parses a line with @" $ do
+                let s = cmd "echo @gabebw"
+                let result = [Item "echo" [NotQuoted "@gabebw"]]
+
+                parseHistory s `shouldBe` Right result
+
+            it "parses a line with $-quoting" $ do
+                let s = cmd "echo $' hello '"
+                let result = [Item "echo" [SingleQuoted " hello "]]
+
+                parseHistory s `shouldBe` Right result
+
         describe "with multiple items, each of which is on one line" $ do
             it "parses commands with a variety of arguments" $ do
                 let s1 = cmd "c1 one `tw\\no` $(arg)"

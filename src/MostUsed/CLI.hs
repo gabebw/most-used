@@ -6,7 +6,6 @@ module MostUsed.CLI
 
 import Data.Monoid ((<>))
 import MostUsed
-import MostUsed.Types
 import Options.Applicative
 
 data Options = Options

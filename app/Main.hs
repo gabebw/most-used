@@ -3,9 +3,8 @@ module Main where
 
 import Data.List
 import Data.Ord (comparing, Down(..))
-import MostUsed
+import MostUsed as M
 import MostUsed.CLI
-import MostUsed.Types as M
 
 main :: IO ()
 main = do

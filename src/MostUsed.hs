@@ -1,6 +1,7 @@
 module MostUsed
     ( parseHistory
     , parseHistory'
+    , module MostUsed.Types
     ) where
 
 import Data.Char (isSpace, isPrint)

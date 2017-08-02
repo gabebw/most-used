@@ -4,6 +4,7 @@ module Main where
 import Data.List
 import Data.Ord (comparing, Down(..))
 import MostUsed as M
+import MostUsed.Parser.Zsh as Zsh
 import MostUsed.CLI
 
 main :: IO ()
@@ -17,14 +18,14 @@ main = do
 
 displaySuccesses :: [Command] -> String -> IO ()
 displaySuccesses oIncludeFirstArgument s = do
-    let results = successes s
+    let results = successes Zsh.items s
     let stats = prettyPrint $ findMostUsed oIncludeFirstArgument results
     putStr $ unlines stats
 
 displayFailures :: String -> IO ()
 displayFailures s = do
     putStrLn "\n!!! The following lines could not be parsed:\n\n"
-    putStrLn $ unlines $ failures s
+    putStrLn $ unlines $ failures Zsh.items s
 
 prettyPrint :: [(Int, String)] -> [String]
 prettyPrint stats = map (\(n, count) -> show n ++ " " ++ count) stats

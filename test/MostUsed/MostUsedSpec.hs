@@ -1,4 +1,7 @@
-module Main (main, spec) where
+module MostUsed.MostUsedSpec
+    ( main
+    , spec
+    ) where
 
 import Data.List (intercalate)
 import MostUsed

@@ -1,31 +1,41 @@
 {-# LANGUAGE NamedFieldPuns #-}
-module Main where
+module Main
+    ( main
+    ) where
 
 import Data.List
+import Data.Maybe
 import Data.Ord (comparing, Down(..))
 import MostUsed as M
-import MostUsed.Parser.Zsh as Zsh
 import MostUsed.CLI
+import MostUsed.Parser.Bash as Bash
+import MostUsed.Parser.Zsh as Zsh
+import System.Environment
+import Text.Megaparsec.String
 
 main :: IO ()
 main = do
-    Options{oIncludeFirstArgument, oDebug} <- parseCLI
+    Options{oIncludeFirstArgument, oDebug, oShell} <- parseCLI
     stdinContents <- getContents
     let f = if oDebug
             then displayFailures
             else displaySuccesses oIncludeFirstArgument
-    f stdinContents
+    f (parser oShell) stdinContents
 
-displaySuccesses :: [Command] -> String -> IO ()
-displaySuccesses oIncludeFirstArgument s = do
-    let results = successes Zsh.items s
+displaySuccesses :: [Command] -> Parser [Item] -> String -> IO ()
+displaySuccesses oIncludeFirstArgument p s = do
+    let results = successes p s
     let stats = prettyPrint $ findMostUsed oIncludeFirstArgument results
     putStr $ unlines stats
 
-displayFailures :: String -> IO ()
-displayFailures s = do
+displayFailures :: Parser [Item] -> String -> IO ()
+displayFailures p s = do
     putStrLn "\n!!! The following lines could not be parsed:\n\n"
-    putStrLn $ unlines $ failures Zsh.items s
+    putStrLn $ unlines $ failures p s
+
+parser :: Shell -> Parser [Item]
+parser Zsh = Zsh.items
+parser Bash = Bash.items
 
 prettyPrint :: [(Int, String)] -> [String]
 prettyPrint stats = map (\(n, count) -> show n ++ " " ++ count) stats

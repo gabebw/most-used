@@ -17,6 +17,8 @@ library
   hs-source-dirs:      src
   exposed-modules:     MostUsed
                      , MostUsed.CLI
+                     , MostUsed.Parser.Bash
+                     , MostUsed.Parser.Common
                      , MostUsed.Parser.Zsh
                      , MostUsed.Types
   build-depends:       base >= 4.7 && < 5
@@ -30,6 +32,7 @@ executable most-used-exe
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , most-used
+                     , megaparsec == 5.2.0
   default-language:    Haskell2010
 
 test-suite spec
@@ -40,8 +43,9 @@ test-suite spec
   ghc-options: -Wall
   build-depends:
       base == 4.*
-    , most-used
     , hspec == 2.*
+    , megaparsec == 5.2.0
+    , most-used
   other-modules: MostUsed.MostUsedSpec
   default-language: Haskell2010
 

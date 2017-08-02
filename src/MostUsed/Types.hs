@@ -2,9 +2,12 @@ module MostUsed.Types
     ( Command(..)
     , Argument(..)
     , Item(..)
+    , Shell(..)
     ) where
 
 type Command = String
+
+data Shell = Zsh | Bash
 
 data Item = Item { command :: Command, arguments :: [Argument] }
             deriving (Show, Eq)

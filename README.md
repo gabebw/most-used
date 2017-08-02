@@ -1,7 +1,7 @@
 # most-used
 
-This takes input from Zsh's `fc` command and parses it to find your most-used
-commands.
+This will find your most-used shell commands. It automatically detects whether
+you're using Zsh or Bash and prints out the history for the correct shell.
 
 To try it out:
 
@@ -16,12 +16,16 @@ $ most-used | head
 After changing something, you can run this to recompile and see the result of
 parsing history:
 
-    ./bin/run
+    ./bin/run-zsh
+
+Or, to parse your Bash history:
+
+    ./bin/run-bash
 
 You can also pass options:
 
-    ./bin/run --include-first-argument=git --include-first-argument=spring
+    ./bin/run-zsh --include-first-argument=git --include-first-argument=spring
 
 To print lines that failed to parse:
 
-    ./bin/run --debug
+    ./bin/run-zsh --debug

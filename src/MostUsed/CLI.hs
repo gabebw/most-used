@@ -11,6 +11,7 @@ import Options.Applicative
 data Options = Options
     { oIncludeFirstArgument :: [Command]
     , oDebug :: Bool
+    , oShell :: Shell
     }
 
 parseCLI :: IO Options
@@ -27,12 +28,27 @@ withInfo opts h d f =
     info (helper <*> opts) $ header h <> progDesc d <> footer f
 
 parseOptions :: Parser Options
-parseOptions = Options <$> parseIncludeFirstArgument <*> parseDebug
+parseOptions = Options
+    <$> parseIncludeFirstArgument
+    <*> parseDebug
+    <*> parseShell
 
 parseIncludeFirstArgument :: Parser [String]
 parseIncludeFirstArgument = many $ strOption $
     long "include-first-argument"
+    <> metavar "command_name"
     <> help "Count this command with its first argument (can be specified more than once)"
+
+parseShell :: Parser Shell
+parseShell = fmap shell $ strOption $
+    long "shell"
+    <> metavar "[bash | zsh]"
+    <> help "Which type of shell history to parse"
+
+shell :: String -> Shell
+shell "bash" = Bash
+shell "zsh" = Zsh
+shell _ = error "--shell can only take 'bash' or 'zsh'"
 
 parseDebug :: Parser Bool
 parseDebug = switch $

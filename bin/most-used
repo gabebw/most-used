@@ -1,5 +1,13 @@
-#!/usr/bin/env zsh -i
+#!/bin/sh
 
-set -eo pipefail
+myshell=${SHELL:-zsh}
 
-fc -l 1 | most-used-exe "$@"
+case "$myshell" in
+  *bash) most-used-bash "$@";;
+  *zsh) most-used-zsh "$@";;
+  *)
+    echo "Your shell, $myshell, is not supported."
+    echo "most-used only supports Zsh and Bash (for now)."
+    exit 1
+    ;;
+esac

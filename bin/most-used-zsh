@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh -i --no-globalrcs --no-rcs
+
+set -eo pipefail
+
+# Zsh doesn't have this set by default, but its startup wizard sets it to
+# `$HOME/.zsh_history`. It's a fine guess to use since we're not loading any
+# startup rc files. Maybe later this will become a problem and require removing
+# the `--no-globalrcs --no-rcs` flags.
+HISTFILE=${HISTFILE:-$HOME/.zsh_history}
+
+fc -l 1 | most-used-exe --shell zsh "$@"

@@ -1,4 +1,4 @@
-module MostUsed.Parser.Zsh
+module MostUsed.Parser.Bash
     ( items
     ) where
 
@@ -8,8 +8,4 @@ import Text.Megaparsec
 import Text.Megaparsec.String
 
 items :: Parser [Item]
-items = do
-    some spaceChar
-    some digitChar -- history number
-    string "  "
-    item `sepBy` pipe <* eof
+items = item `sepBy` pipe <* eof

@@ -1,6 +1,0 @@
-#!/usr/bin/env zsh -i
-
-set -eo pipefail
-
-stack build
-fc -l 1 | stack exec most-used-exe -- "$@"

@@ -1,0 +1,26 @@
+sudo: false
+
+# Ubuntu Trusty 14.04 is the new default, but might as well be explicit about it
+# https://blog.travis-ci.com/2017-07-11-trusty-as-default-linux-is-coming
+dist: trusty
+
+# Do not choose a language; we provide our own build tools.
+language: generic
+
+# Caching so the next build will be fast too.
+cache:
+  directories:
+  - $HOME/.stack
+
+before_install:
+# Download and unpack the stack executable
+- mkdir -p ~/.local/bin
+- export PATH=$HOME/.local/bin:$PATH
+- travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+
+install:
+- stack --no-terminal --install-ghc test --only-dependencies --fast --test
+- echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
+
+script:
+  - stack --no-terminal test --ghc-options="-O0 -Wall -Werror"

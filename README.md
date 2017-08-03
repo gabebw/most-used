@@ -1,4 +1,4 @@
-# most-used
+# most-used [![Build Status](https://travis-ci.org/gabebw/most-used.svg?branch=master)](https://travis-ci.org/gabebw/most-used)
 
 This will find your most-used shell commands. It automatically detects whether
 you're using Zsh or Bash and prints out the history for the correct shell.

@@ -1,15 +1,15 @@
 module MostUsed.Types
-    ( Command(..)
+    ( CommandName(..)
     , Argument(..)
-    , Item(..)
+    , Command(..)
     , Shell(..)
     ) where
 
-type Command = String
+type CommandName = String
 
 data Shell = Zsh | Bash
 
-data Item = Item { command :: Command, arguments :: [Argument] }
+data Command = Command { commandName :: CommandName, arguments :: [Argument] }
             deriving (Show, Eq)
 
 data Argument = DoubleQuoted String

@@ -9,7 +9,7 @@ import MostUsed
 import Options.Applicative
 
 data Options = Options
-    { oIncludeFirstArgument :: [Command]
+    { oIncludeFirstArgument :: [CommandName]
     , oDebug :: Bool
     , oShell :: Shell
     }
@@ -33,7 +33,7 @@ parseOptions = Options
     <*> parseDebug
     <*> parseShell
 
-parseIncludeFirstArgument :: Parser [String]
+parseIncludeFirstArgument :: Parser [CommandName]
 parseIncludeFirstArgument = many $ strOption $
     long "include-first-argument"
     <> metavar "command_name"

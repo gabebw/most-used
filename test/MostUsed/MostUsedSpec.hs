@@ -19,7 +19,7 @@ spec = describe "top level" $ do
     commonSpec "Zsh parser" Zsh.items zshCommand
     zshSpec Zsh.items zshCommand
 
-commonSpec :: String -> Parser [Item] -> (String -> String) -> Spec
+commonSpec :: String -> Parser [Command] -> (String -> String) -> Spec
 commonSpec description parser cmd = describe description $ do
     describe "failures" $ do
         it "returns a pretty error message" $ do
@@ -38,53 +38,53 @@ commonSpec description parser cmd = describe description $ do
             let s1 = unparseableCommand cmd
             let s2 = cmd "cmd 'a'"
             let s = intercalate "\n" [s1, s2]
-            successes parser s `shouldBe` [Item "cmd" [SingleQuoted "a"]]
+            successes parser s `shouldBe` [Command "cmd" [SingleQuoted "a"]]
 
         describe "with a single item" $ do
             it "parses a command with no arguments" $ do
                 let s = cmd "cmd"
-                let result = Item "cmd" []
+                let result = Command "cmd" []
                 successes parser s `shouldBe` [result]
 
             it "parses a command with one unquoted argument" $ do
                 let s = cmd "cmd arg"
-                let result = Item "cmd" [NotQuoted "arg"]
+                let result = Command "cmd" [NotQuoted "arg"]
                 successes parser s `shouldBe` [result]
 
             it "parses a command with one single-quoted argument" $ do
                 let s = cmd "cmd 'a r g'"
-                let result = Item "cmd" [SingleQuoted "a r g"]
+                let result = Command "cmd" [SingleQuoted "a r g"]
                 successes parser s `shouldBe` [result]
 
             it "parses a command with one double-quoted argument" $ do
                 let s = cmd "cmd \"a r g\""
-                let result = Item "cmd" [DoubleQuoted "a r g"]
+                let result = Command "cmd" [DoubleQuoted "a r g"]
                 successes parser s `shouldBe` [result]
 
             it "parses a command with one backtick-ed argument" $ do
                 let s = cmd "cmd `arg`"
-                let result = Item "cmd" [Backticks "arg"]
+                let result = Command "cmd" [Backticks "arg"]
                 successes parser s `shouldBe` [result]
 
             it "parses a command with one $(argument)" $ do
                 let s = cmd "cmd $(arg x)"
-                let result = Item "cmd" [CommandSubstitution "arg x"]
+                let result = Command "cmd" [CommandSubstitution "arg x"]
                 successes parser s `shouldBe` [result]
 
             it "parses a command preceded by a backslash" $ do
                 let s = cmd "\\psql arg"
-                let result = Item "\\psql" [NotQuoted "arg"]
+                let result = Command "\\psql" [NotQuoted "arg"]
                 successes parser s `shouldBe` [result]
 
             it "parses a command with process substitution" $ do
                 let s = cmd "cmd <(one) <(two)"
-                let result = Item "cmd" [ProcessSubstitution "one"
+                let result = Command "cmd" [ProcessSubstitution "one"
                                         , ProcessSubstitution "two"]
                 successes parser s `shouldBe` [result]
 
             it "parses a command with a variety of arguments" $ do
                 let s = cmd "cmd one `two` '3 x' \"4 y\" $(arg)"
-                let result = Item "cmd" [NotQuoted "one"
+                let result = Command "cmd" [NotQuoted "one"
                                         , Backticks "two"
                                         , SingleQuoted "3 x"
                                         , DoubleQuoted "4 y"
@@ -93,25 +93,25 @@ commonSpec description parser cmd = describe description $ do
 
             it "parses a line with multiple items separated by a pipe" $ do
                 let s = cmd "c1 one |c2 `two`"
-                let result = [Item "c1" [NotQuoted "one"]
-                             , Item "c2" [Backticks "two"]]
+                let result = [Command "c1" [NotQuoted "one"]
+                             , Command "c2" [Backticks "two"]]
                 successes parser s `shouldBe` result
 
             it "parses a line with @" $ do
                 let s = cmd "echo @gabebw"
-                let result = [Item "echo" [NotQuoted "@gabebw"]]
+                let result = [Command "echo" [NotQuoted "@gabebw"]]
 
                 successes parser s `shouldBe` result
 
             it "parses a line with $-quoting" $ do
                 let s = cmd "echo $' hello '"
-                let result = [Item "echo" [SingleQuoted " hello "]]
+                let result = [Command "echo" [SingleQuoted " hello "]]
 
                 successes parser s `shouldBe` result
 
             it "parses a line with a variable" $ do
                 let s = cmd "echo $var"
-                let result = [Item "echo" [NotQuoted "$var"]]
+                let result = [Command "echo" [NotQuoted "$var"]]
 
                 successes parser s `shouldBe` result
 
@@ -121,20 +121,20 @@ commonSpec description parser cmd = describe description $ do
                 let s2 = cmd "c2 '3 x' \"4 y\""
                 let s3 = cmd "c3"
                 let s = intercalate "\n" [s1, s2, s3]
-                let i1 = Item "c1" [NotQuoted "one"
+                let i1 = Command "c1" [NotQuoted "one"
                                    , Backticks "two"
                                    , CommandSubstitution "arg"]
-                let i2 = Item "c2" [SingleQuoted "3 x"
+                let i2 = Command "c2" [SingleQuoted "3 x"
                                    , DoubleQuoted "4 y"]
-                successes parser s `shouldBe` [i1, i2, Item "c3" []]
+                successes parser s `shouldBe` [i1, i2, Command "c3" []]
 
         it "can parse something with a bare escaped newline" $ do
             let s = cmd "fc -lDt 1 \\n"
-            let item = Item "fc" [NotQuoted "-lDt", NotQuoted "1"]
+            let item = Command "fc" [NotQuoted "-lDt", NotQuoted "1"]
 
             successes parser s `shouldBe` [item]
 
-zshSpec :: Parser [Item] -> (String -> String) -> Spec
+zshSpec :: Parser [Command] -> (String -> String) -> Spec
 zshSpec parser cmd = describe "Zsh-only tests" $ do
     describe "failures" $ do
         it "does not parse a string without a command number" $ do
@@ -145,7 +145,7 @@ zshSpec parser cmd = describe "Zsh-only tests" $ do
         describe "with a single item" $ do
             it "parses a command with no arguments and a low number" $ do
                 let s = zshCommandWithLowNumber "cmd"
-                let result = Item "cmd" []
+                let result = Command "cmd" []
                 successes parser s `shouldBe` [result]
 
         describe "with multiple items, each of which is on one line" $ do
@@ -154,16 +154,16 @@ zshSpec parser cmd = describe "Zsh-only tests" $ do
                 let s2 = cmd "c2 '3 x' \"4 y\""
                 let s3 = cmd "c3"
                 let s = intercalate "\n" [s1, s2, s3]
-                let i1 = Item "c1" [NotQuoted "one"
+                let i1 = Command "c1" [NotQuoted "one"
                                    , Backticks "tw\\no"
                                    , CommandSubstitution "arg"]
-                let i2 = Item "c2" [SingleQuoted "3 x"
+                let i2 = Command "c2" [SingleQuoted "3 x"
                                    , DoubleQuoted "4 y"]
-                successes parser s `shouldBe` [i1, i2, Item "c3" []]
+                successes parser s `shouldBe` [i1, i2, Command "c3" []]
 
         it "can parse something with a bare escaped newline" $ do
             let s = cmd "fc -lDt 1 \\n"
-            let item = Item "fc" [NotQuoted "-lDt", NotQuoted "1"]
+            let item = Command "fc" [NotQuoted "-lDt", NotQuoted "1"]
 
             successes parser s `shouldBe` [item]
 
@@ -173,12 +173,12 @@ zshSpec parser cmd = describe "Zsh-only tests" $ do
                 let s2 = cmd "c2 '3" ++ escapedNewline ++ " x' \"4 " ++ escapedNewline ++ "y\""
                 let s3 = cmd "c3"
                 let s = intercalate "\n" [s1, s2, s3]
-                let i1 = Item "c1" [NotQuoted "one"
+                let i1 = Command "c1" [NotQuoted "one"
                                    , Backticks "tw\\nno"
                                    , CommandSubstitution "arg"]
-                let i2 = Item "c2" [SingleQuoted "3\\n x"
+                let i2 = Command "c2" [SingleQuoted "3\\n x"
                                    , DoubleQuoted "4 \\ny"]
-                successes parser s `shouldBe` [i1, i2, Item "c3" []]
+                successes parser s `shouldBe` [i1, i2, Command "c3" []]
 
 escapedNewline :: String
 escapedNewline = "\\n"

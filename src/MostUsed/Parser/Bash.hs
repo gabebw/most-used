@@ -7,5 +7,5 @@ import MostUsed.Types
 import Text.Megaparsec
 import Text.Megaparsec.String
 
-items :: Parser [Item]
+items :: Parser [Command]
 items = item `sepBy` pipe <* eof

@@ -8,12 +8,12 @@ import MostUsed.Types
 import Text.Megaparsec
 import Text.Megaparsec.String
 
-item :: Parser Item
+item :: Parser Command
 item = do
-    command <- some allowedCharsInBareWords
+    commandName <- some allowedCharsInBareWords
     space
     arguments <- singleArgument `sepEndBy` separator
-    return $ Item command arguments
+    return $ Command commandName arguments
 
 pipe :: Parser ()
 pipe = space >> char '|' >> space

@@ -7,7 +7,7 @@ import MostUsed.Types
 import Text.Megaparsec
 import Text.Megaparsec.String
 
-items :: Parser [Item]
+items :: Parser [Command]
 items = do
     some spaceChar
     some digitChar -- history number

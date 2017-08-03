@@ -10,11 +10,11 @@ import MostUsed.Types
 import Text.Megaparsec
 import Text.Megaparsec.String
 
-successes :: Parser [Item] -> String -> [Item]
+successes :: Parser [Command] -> String -> [Command]
 successes parser s = mconcat $ rights $ successesAndFailures parser $ lines s
 
-failures :: Parser [Item] -> String -> [String]
+failures :: Parser [Command] -> String -> [String]
 failures parser s = lefts $ successesAndFailures parser $ lines s
 
-successesAndFailures :: Parser [Item] -> [String] -> [Either String [Item]]
+successesAndFailures :: Parser [Command] -> [String] -> [Either String [Command]]
 successesAndFailures parser = map (\s -> first parseErrorPretty $ parse parser s s)

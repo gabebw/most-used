@@ -1,5 +1,5 @@
 module MostUsed.Types
-    ( CommandName(..)
+    ( CommandName
     , Argument(..)
     , Command(..)
     , Shell(..)

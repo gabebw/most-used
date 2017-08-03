@@ -10,10 +10,10 @@ import Text.Megaparsec.String
 
 item :: Parser Command
 item = do
-    commandName <- some allowedCharsInBareWords
+    name <- some allowedCharsInBareWords
     space
-    arguments <- singleArgument `sepEndBy` separator
-    return $ Command commandName arguments
+    args <- singleArgument `sepEndBy` separator
+    return $ Command name args
 
 pipe :: Parser ()
 pipe = space >> char '|' >> space

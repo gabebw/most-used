@@ -4,13 +4,11 @@ module Main
     ) where
 
 import Data.List
-import Data.Maybe
 import Data.Ord (comparing, Down(..))
 import MostUsed as M
 import MostUsed.CLI
-import MostUsed.Parser.Bash as Bash
-import MostUsed.Parser.Zsh as Zsh
-import System.Environment
+import qualified MostUsed.Parser.Bash as Bash
+import qualified MostUsed.Parser.Zsh as Zsh
 import Text.Megaparsec.String
 
 main :: IO ()
@@ -48,6 +46,7 @@ findMostUsed includeFirstArgument items = reverseSort $
         withFirstArg includeFirstArgument items
     where
         toTuple xs@(x:_) = (length xs, x)
+        toTuple [] = (0, "unknown")
 
 -- Used when including first arg for some items. Dual-count them so one Command
 -- becomes "command" and "command firstArg".

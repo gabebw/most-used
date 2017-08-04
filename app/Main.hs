@@ -7,9 +7,11 @@ import Data.List
 import Data.Ord (comparing, Down(..))
 import MostUsed as M
 import MostUsed.CLI
+import Text.Megaparsec.String
+import Data.HashMap.Strict (HashMap)
+import qualified Data.HashMap.Strict as HM
 import qualified MostUsed.Parser.Bash as Bash
 import qualified MostUsed.Parser.Zsh as Zsh
-import Text.Megaparsec.String
 
 main :: IO ()
 main = do
@@ -35,18 +37,17 @@ parser :: Shell -> Parser [Command]
 parser Zsh = Zsh.items
 parser Bash = Bash.items
 
-prettyPrint :: [(Int, String)] -> [String]
-prettyPrint stats = map (\(n, count) -> show n ++ " " ++ count) stats
+prettyPrint :: [(String, Int)] -> [String]
+prettyPrint stats = map (\(count, n) -> show n ++ " " ++ count) stats
 
-findMostUsed :: [CommandName] -> [Command] -> [(Int, String)]
-findMostUsed includeFirstArgument items = reverseSort $
-        map toTuple $
-        group $
-        sort $
-        withFirstArg includeFirstArgument items
-    where
-        toTuple xs@(x:_) = (length xs, x)
-        toTuple [] = (0, "unknown")
+findMostUsed :: [CommandName] -> [Command] -> [(String, Int)]
+findMostUsed includeFirstArgument items = sortBy (comparing (Down . snd)) $
+    HM.toList $
+    buildMap (withFirstArg includeFirstArgument items) HM.empty
+
+buildMap :: [String] -> HashMap String Int -> HashMap String Int
+buildMap (s:ss) m = buildMap ss $ HM.insertWith (+) s 1 m
+buildMap [] m = m
 
 -- Used when including first arg for some items. Dual-count them so one Command
 -- becomes "command" and "command firstArg".
@@ -58,8 +59,3 @@ withFirstArg includingFirst (Command n []:is) = n:withFirstArg includingFirst is
 withFirstArg includingFirst (Command n (a:_):is) = prefix ++ withFirstArg includingFirst is
     where
         prefix = if n `elem` includingFirst then [n ++ " " ++ show a, n] else [n]
-
--- Faster than `reverse . sort`:
--- https://ro-che.info/articles/2016-04-02-descending-sort-haskell
-reverseSort :: (Ord a) => [a] -> [a]
-reverseSort = sortBy (comparing Down)

@@ -34,6 +34,7 @@ executable most-used-exe
   build-depends:       base
                      , most-used
                      , megaparsec == 5.2.0
+                     , unordered-containers == 0.2.8.0
   default-language:    Haskell2010
 
 test-suite spec

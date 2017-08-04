@@ -29,3 +29,7 @@ You can also pass options:
 To print lines that failed to parse:
 
     ./bin/run-zsh --debug
+
+To run tests:
+
+    ./bin/test

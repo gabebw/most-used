@@ -1,4 +1,8 @@
 #!/bin/sh
 
+set -e
+
+stack clean
+
 # Turn on all warnings, and raise an error if any of them are found
 stack test --ghc-options="-O0 -Wall -Werror"

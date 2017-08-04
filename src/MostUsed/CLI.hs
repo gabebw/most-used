@@ -4,6 +4,7 @@ module MostUsed.CLI
     )
     where
 
+import Data.Maybe
 import Data.Monoid ((<>))
 import MostUsed
 import Options.Applicative
@@ -40,15 +41,17 @@ parseIncludeFirstArgument = many $ strOption $
     <> help "Count this command with its first argument (can be specified more than once)"
 
 parseShell :: Parser Shell
-parseShell = fmap shell $ strOption $
-    long "shell"
-    <> metavar "[bash | zsh]"
-    <> help "Which type of shell history to parse"
+parseShell = fmap (fromMaybe Zsh) $ optional $ shell <$> option
+    where
+        option = strOption $
+            long "shell"
+            <> metavar "[bash | zsh]"
+            <> help "Which type of shell history to parse (defaults to zsh)"
 
 shell :: String -> Shell
 shell "bash" = Bash
 shell "zsh" = Zsh
-shell _ = error "--shell can only take 'bash' or 'zsh'"
+shell _ = Zsh
 
 parseDebug :: Parser Bool
 parseDebug = switch $

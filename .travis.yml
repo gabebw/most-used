@@ -23,7 +23,7 @@ before_install:
 
 install:
 - stack --no-terminal --install-ghc test --only-dependencies --fast --test
-- echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
+- echo "$(stack exec -- ghc --version) [$(stack exec -- ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
 
 script:
   - stack --no-terminal test --ghc-options="-O0 -Wall -Werror"

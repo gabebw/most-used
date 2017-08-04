@@ -1,5 +1,8 @@
 sudo: false
 
+notifications:
+  email: false
+
 # Ubuntu Trusty 14.04 is the new default, but might as well be explicit about it
 # https://blog.travis-ci.com/2017-07-11-trusty-as-default-linux-is-coming
 dist: trusty

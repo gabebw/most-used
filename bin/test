@@ -1,8 +1,47 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-stack clean
+stack_wrapper(){
+  if [ -n "$CI" ]; then
+    stack --no-terminal --skip-ghc-check "$@"
+  else
+    stack --skip-ghc-check "$@"
+  fi
+}
+
+run_most_used(){
+  printf "$1" | stack_wrapper exec -- most-used-exe --shell "$2"
+}
+
+zsh_input=' 1  hello $(to) `all` <(corgis)\n 2  hello dogs\n 452  hi| there'
+bash_input=$'hello\nhello `from` "the" \'shell\'\nhi | there $(person)'
+output='2 hello\n1 there\n1 hi'
+
+stack_wrapper clean
 
 # Turn on all warnings, and raise an error if any of them are found
-stack test --ghc-options="-O0 -Wall -Werror"
+stack_wrapper test # --ghc-options="-O0 -Wall -Werror"
+
+# End-to-end testing of the CLI
+if ! [ "$(run_most_used "$zsh_input" "zsh")" = "$(printf "$output")" ]; then
+  echo "Zsh history parsing failed"
+  echo "Got:"
+  run_most_used "$zsh_input" "zsh"
+  echo "----------------------"
+  echo "Expected:"
+  printf "$output"
+  echo
+  exit 1
+fi
+
+if ! [ "$(run_most_used "$bash_input" "bash")" = "$(printf "$output")" ]; then
+  echo "Bash history parsing failed"
+  echo "Got:"
+  run_most_used "$bash_input" "bash"
+  echo "----------------------"
+  echo "Expected:"
+  printf "$output"
+  echo
+  exit 1
+fi

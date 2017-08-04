@@ -26,4 +26,4 @@ install:
 - echo "$(stack exec -- ghc --version)"
 
 script:
-  - stack --no-terminal test --ghc-options="-O0 -Wall -Werror"
+  - ./bin/test

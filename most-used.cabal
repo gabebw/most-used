@@ -21,6 +21,7 @@ library
                      , MostUsed.Parser.Common
                      , MostUsed.Parser.Zsh
                      , MostUsed.Types
+                     , MostUsed.Version
   build-depends:       base >= 4.7 && < 5
                      , megaparsec == 5.2.0
                      , optparse-applicative == 0.13.2.0

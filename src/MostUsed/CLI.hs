@@ -7,6 +7,7 @@ module MostUsed.CLI
 import Data.Maybe
 import Data.Monoid ((<>))
 import MostUsed
+import MostUsed.Version
 import Options.Applicative
 
 data Options = Options
@@ -26,13 +27,19 @@ parseCLI =
 
 withInfo :: Parser a -> String -> String -> String -> ParserInfo a
 withInfo opts h d f =
-    info (helper <*> opts) $ header h <> progDesc d <> footer f
+    info (helper <*> opts <* versionOption) $ header h <> progDesc d <> footer f
 
 parseOptions :: Parser Options
 parseOptions = Options
     <$> parseIncludeFirstArgument
     <*> parseDebug
     <*> parseShell
+
+versionOption :: Parser (a -> a)
+versionOption = infoOption ("most-used version " ++ version) $
+    long "version"
+    <> short 'v'
+    <> help "Display the version"
 
 parseIncludeFirstArgument :: Parser [CommandName]
 parseIncludeFirstArgument = many $ strOption $

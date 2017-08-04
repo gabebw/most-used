@@ -48,9 +48,9 @@ parseIncludeFirstArgument = many $ strOption $
     <> help "Count this command with its first argument (can be specified more than once)"
 
 parseShell :: Parser Shell
-parseShell = fmap (fromMaybe Zsh) $ optional $ shell <$> option
+parseShell = fmap (fromMaybe Zsh) $ optional $ shell <$> o
     where
-        option = strOption $
+        o = strOption $
             long "shell"
             <> metavar "[bash | zsh]"
             <> help "Which type of shell history to parse (defaults to zsh)"

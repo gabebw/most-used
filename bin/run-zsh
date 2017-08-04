@@ -1,7 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env zsh -i
 
 set -eo pipefail
 
 stack build
-stack install 2>/dev/null
-PATH=$HOME/.local/bin:$PATH ./bin/most-used-zsh "$@"
+
+HISTFILE=${HISTFILE:-$HOME/.zsh_history}
+HISTSIZE=1000000000000000000
+fc -R "$HISTFILE"
+
+fc -l 1 | stack exec most-used-exe -- --shell zsh "$@"

@@ -3,6 +3,7 @@ module MostUsed.Types
     , Argument(..)
     , Command(..)
     , Shell(..)
+    , Result(..)
     ) where
 
 import Data.List (sortBy)
@@ -21,6 +22,15 @@ data Result = Result
     { resultName :: CommandName
     , frequency :: Int
     }
+
+instance Show Result where
+    show (Result n f) = show f ++ " " ++ n
+
+instance Eq Result where
+    (Result _ f1) == (Result _ f2) = f1 == f2
+
+instance Ord Result where
+    (Result _ f1) `compare` (Result _ f2) = f1 `compare` f2
 
 value :: (Num a) => Result -> a
 value (Result n f) = fromIntegral $ length n * f

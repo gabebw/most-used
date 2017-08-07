@@ -24,8 +24,8 @@ main = do
 
 displaySuccesses :: [CommandName] -> Parser [Command] -> String -> IO ()
 displaySuccesses oIncludeFirstArgument p s = do
-    let results = successes p s
-    let stats = prettyPrint $ findMostUsed oIncludeFirstArgument results
+    let rs = results oIncludeFirstArgument $ successes p s
+    let stats = prettyPrint $ findMostUsed rs
     putStr $ unlines stats
 
 displayFailures :: Parser [Command] -> String -> IO ()
@@ -37,20 +37,26 @@ parser :: Shell -> Parser [Command]
 parser Zsh = Zsh.items
 parser Bash = Bash.items
 
-prettyPrint :: [(String, Int)] -> [String]
-prettyPrint stats = map (\(count, n) -> show n ++ " " ++ count) stats
+prettyPrint :: [Result] -> [String]
+prettyPrint = map show
 
-findMostUsed :: [CommandName] -> [Command] -> [(String, Int)]
-findMostUsed includeFirstArgument items = sortBy (comparing (Down . snd)) $
+findMostUsed :: [Result] -> [Result]
+findMostUsed = reverseSort
+
+reverseSort :: (Ord a) => [a] -> [a]
+reverseSort = sortBy (comparing Down)
+
+results :: [CommandName] -> [Command] -> [Result]
+results includeFirstArgument cs = map (uncurry Result) $
     HM.toList $
-    buildMap (withFirstArg includeFirstArgument items) HM.empty
+    buildMap (withFirstArg includeFirstArgument cs) HM.empty
 
 buildMap :: [String] -> HashMap String Int -> HashMap String Int
 buildMap (s:ss) m = buildMap ss $ HM.insertWith (+) s 1 m
 buildMap [] m = m
 
--- Used when including first arg for some items. Dual-count them so one Command
--- becomes "command" and "command firstArg".
+-- Used when including first arg for some commands. Dual-count them so one
+-- Command becomes "command" and "command firstArg".
 -- Can be slow: O(size(includeFirstArgument) * size(items))
 withFirstArg :: [CommandName] -> [Command] -> [String]
 withFirstArg [] is = map M.commandName is

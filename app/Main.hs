@@ -26,7 +26,8 @@ displaySuccesses :: [CommandName] -> Parser [Command] -> String -> IO ()
 displaySuccesses oIncludeFirstArgument p s = do
     let rs = results oIncludeFirstArgument $ successes p s
     let stats = prettyPrint $ findMostUsed rs
-    putStr $ unlines stats
+    -- putStr $ unlines stats
+    mapM_ print $ topPercentile 15 $ filter (\(Result n f) -> length n > 1) rs
 
 displayFailures :: Parser [Command] -> String -> IO ()
 displayFailures p s = do
@@ -41,10 +42,10 @@ prettyPrint :: [Result] -> [String]
 prettyPrint = map show
 
 findMostUsed :: [Result] -> [Result]
-findMostUsed = reverseSort
+findMostUsed = reverseSortBy id
 
-reverseSort :: (Ord a) => [a] -> [a]
-reverseSort = sortBy (comparing Down)
+reverseSortBy :: (Ord b) => (a -> b) -> [a] -> [a]
+reverseSortBy f = sortBy (comparing (Down . f))
 
 results :: [CommandName] -> [Command] -> [Result]
 results includeFirstArgument cs = map (uncurry Result) $
@@ -65,3 +66,17 @@ withFirstArg includingFirst (Command n []:is) = n:withFirstArg includingFirst is
 withFirstArg includingFirst (Command n (a:_):is) = prefix ++ withFirstArg includingFirst is
     where
         prefix = if n `elem` includingFirst then [n ++ " " ++ show a, n] else [n]
+
+-- Get top Nth percentile of a list of Results by value (length * frequency)
+topPercentile :: Int -> [Result] -> [Result]
+topPercentile n xs = reverseSortBy value $ filter (\r -> value r >= p) sorted
+    where
+        p = percentileBoundary n (map value xs)
+        sorted = sortBy (comparing value) xs
+
+-- Get value of nth percentile of the list
+percentileBoundary :: Int -> [a] -> Float
+percentileBoundary n xs = (fromIntegral ((length xs) * n)) / 100 + 0.5
+
+value :: (Num a) => Result -> a
+value (Result n f) = fromIntegral $ length n * f

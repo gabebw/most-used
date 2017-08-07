@@ -32,20 +32,6 @@ instance Eq Result where
 instance Ord Result where
     (Result _ f1) `compare` (Result _ f2) = f1 `compare` f2
 
-value :: (Num a) => Result -> a
-value (Result n f) = fromIntegral $ length n * f
-
--- Get value of nth percentile of the list
-percentileBoundary :: Int -> [a] -> Float
-percentileBoundary n xs = (fromIntegral ((length xs) * n)) / 100 + 0.5
-
--- Get top nth percentile of a list
-topPercentile :: Int -> [Result] -> [Result]
-topPercentile n xs = filter (\r -> value r >= p) sorted
-    where
-        p = percentileBoundary n (map value xs)
-        sorted = sortBy (comparing value) xs
-
 data Argument = DoubleQuoted String
               | SingleQuoted String
               | NotQuoted String

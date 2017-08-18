@@ -16,14 +16,14 @@ data Argument = DoubleQuoted String
               | SingleQuoted String
               | NotQuoted String
               | Backticks String
-              | CommandSubstitution String
+              | CommandSubstitution Command
               | ProcessSubstitution String
               deriving (Eq)
 
 instance Show Argument where
-    show (DoubleQuoted s) = "\"" ++ s ++ "\""
-    show (SingleQuoted s) = "'" ++ s ++ "'"
-    show (NotQuoted s) = s
+    show (DoubleQuoted s) = "DQ \"" ++ s ++ "\""
+    show (SingleQuoted s) = "SQ '" ++ s ++ "'"
+    show (NotQuoted s) = "NQ<" ++ s ++ ">"
     show (Backticks s) = "`" ++ s ++ "`"
-    show (CommandSubstitution s) = "$(" ++ s ++ ")"
+    show (CommandSubstitution c) = "$(" ++ show c ++ ")"
     show (ProcessSubstitution s) = "<(" ++ s ++ ")"

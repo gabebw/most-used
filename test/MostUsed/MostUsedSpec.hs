@@ -68,7 +68,16 @@ commonSpec description parser cmd = describe description $ do
 
             it "parses a command with one $(argument)" $ do
                 let s = cmd "cmd $(arg x)"
-                let result = Command "cmd" [CommandSubstitution "arg x"]
+                let innerCommand = Command "arg" [NotQuoted "x"]
+                let result = Command "cmd" [CommandSubstitution innerCommand]
+                successes parser s `shouldBe` [result]
+
+            it "parses a command with nested $(argument $(arg))" $ do
+                let s = cmd "cmd $(arg1 $(arg2))"
+                let inner = Command "arg2" []
+                let cmd1 = Command "arg1" [CommandSubstitution inner]
+                let result = Command "cmd" [CommandSubstitution cmd1]
+
                 successes parser s `shouldBe` [result]
 
             it "parses a command preceded by a backslash" $ do
@@ -88,7 +97,7 @@ commonSpec description parser cmd = describe description $ do
                                         , Backticks "two"
                                         , SingleQuoted "3 x"
                                         , DoubleQuoted "4 y"
-                                        , CommandSubstitution "arg"]
+                                        , CommandSubstitution (Command "arg" [])]
                 successes parser s `shouldBe` [result]
 
             it "parses a line with multiple items separated by a pipe" $ do
@@ -123,7 +132,7 @@ commonSpec description parser cmd = describe description $ do
                 let s = intercalate "\n" [s1, s2, s3]
                 let i1 = Command "c1" [NotQuoted "one"
                                    , Backticks "two"
-                                   , CommandSubstitution "arg"]
+                                   , CommandSubstitution (Command "arg" [])]
                 let i2 = Command "c2" [SingleQuoted "3 x"
                                    , DoubleQuoted "4 y"]
                 successes parser s `shouldBe` [i1, i2, Command "c3" []]
@@ -156,7 +165,7 @@ zshSpec parser cmd = describe "Zsh-only tests" $ do
                 let s = intercalate "\n" [s1, s2, s3]
                 let i1 = Command "c1" [NotQuoted "one"
                                    , Backticks "tw\\no"
-                                   , CommandSubstitution "arg"]
+                                   , CommandSubstitution (Command "arg" [])]
                 let i2 = Command "c2" [SingleQuoted "3 x"
                                    , DoubleQuoted "4 y"]
                 successes parser s `shouldBe` [i1, i2, Command "c3" []]
@@ -175,7 +184,7 @@ zshSpec parser cmd = describe "Zsh-only tests" $ do
                 let s = intercalate "\n" [s1, s2, s3]
                 let i1 = Command "c1" [NotQuoted "one"
                                    , Backticks "tw\\nno"
-                                   , CommandSubstitution "arg"]
+                                   , CommandSubstitution (Command "arg" [])]
                 let i2 = Command "c2" [SingleQuoted "3\\n x"
                                    , DoubleQuoted "4 \\ny"]
                 successes parser s `shouldBe` [i1, i2, Command "c3" []]

@@ -26,15 +26,16 @@ singleArgument =
     DoubleQuoted <$> surroundedBy "\""
     <|> SingleQuoted <$> surroundedBy "'"
     <|> Backticks <$> surroundedBy "`"
-    <|> CommandSubstitution <$> try (char '$' *> surroundedByParens)
+    <|> CommandSubstitution <$> try (string "$(" *> item <* char ')')
     <|> ProcessSubstitution <$> (char '<' *> surroundedByParens)
     <|> SingleQuoted <$> try (char '$' *> surroundedBy "'")
     <|> NotQuoted <$> some allowedCharsInBareWords
     <?> "single argument parser"
 
 allowedCharsInBareWords :: Parser Char
-allowedCharsInBareWords = satisfy (\c ->
-    c /= '|' && not (isSpace c) && isPrint c)
+allowedCharsInBareWords = satisfy (\c -> not (bad c) && isPrint c)
+    where
+        bad c = c `elem` "|()'\"" || isSpace c
 
 surroundedBy :: String -> Parser String
 surroundedBy s = between (string s) (string s) (many $ noneOf s)

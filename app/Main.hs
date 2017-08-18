@@ -1,4 +1,4 @@
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE NamedFieldPuns, RecordWildCards #-}
 module Main
     ( main
     ) where
@@ -15,7 +15,7 @@ import qualified MostUsed.Parser.Zsh as Zsh
 
 main :: IO ()
 main = do
-    Options{oIncludeFirstArgument, oDebug, oShell} <- parseCLI
+    Options{..} <- parseCLI
     stdinContents <- getContents
     let f = if oDebug
             then displayFailures

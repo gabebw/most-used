@@ -21,9 +21,9 @@ data Argument = DoubleQuoted String
               deriving (Eq)
 
 instance Show Argument where
-    show (DoubleQuoted s) = "DQ \"" ++ s ++ "\""
-    show (SingleQuoted s) = "SQ '" ++ s ++ "'"
-    show (NotQuoted s) = "NQ<" ++ s ++ ">"
+    show (DoubleQuoted s) = "\"" ++ s ++ "\""
+    show (SingleQuoted s) = "'" ++ s ++ "'"
+    show (NotQuoted s) = s
     show (Backticks s) = "`" ++ s ++ "`"
     show (CommandSubstitution c) = "$(" ++ show c ++ ")"
     show (ProcessSubstitution s) = "<(" ++ s ++ ")"

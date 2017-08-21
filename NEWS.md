@@ -1,3 +1,10 @@
+## v0.0.6 (August 21, 2017)
+
+* Parse Bash history, not just Zsh history
+* Add a `--version` flag
+* Parse nested process substitution, like `$(echo $(echo hello))`
+* Parse heredocs, like `cat <<<hello`
+
 ## v0.0.5 (August 1, 2017)
 
 * Parse lines with shell variables (like `echo $var`)

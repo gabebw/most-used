@@ -27,7 +27,7 @@ singleArgument =
     <|> SingleQuoted <$> surroundedBy "'"
     <|> Backticks <$> surroundedBy "`"
     <|> CommandSubstitution <$> try (char '$' *> surroundedByParens item)
-    <|> Heredoc <$> try (string "<<<" *> heredocBody)
+    <|> Heredoc <$> (string "<<<" *> heredocBody)
     <|> ProcessSubstitution <$> (char '<' *> surroundedByParens item)
     <|> SingleQuoted <$> try (char '$' *> surroundedBy "'")
     <|> NotQuoted <$> bareWord

@@ -30,14 +30,14 @@ singleArgument =
     <|> Heredoc <$> try (string "<<<" *> heredocBody)
     <|> ProcessSubstitution <$> (char '<' *> surroundedByParens)
     <|> SingleQuoted <$> try (char '$' *> surroundedBy "'")
-    <|> NotQuoted <$> some allowedCharsInBareWords
+    <|> NotQuoted <$> bareWord
     <?> "single argument parser"
 
 heredocBody :: Parser String
-heredocBody =
-    surroundedBy "'"
-    <|> surroundedBy "\""
-    <|> some allowedCharsInBareWords
+heredocBody = surroundedBy "'" <|> surroundedBy "\"" <|> bareWord
+
+bareWord :: Parser String
+bareWord = some allowedCharsInBareWords
 
 allowedCharsInBareWords :: Parser Char
 allowedCharsInBareWords = satisfy (\c -> not (bad c) && isPrint c)

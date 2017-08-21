@@ -10,7 +10,7 @@ import Text.Megaparsec.String
 
 item :: Parser Command
 item = do
-    name <- some allowedCharsInBareWords
+    name <- bareWord
     space
     args <- singleArgument `sepEndBy` separator
     return $ Command name args

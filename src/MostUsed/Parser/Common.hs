@@ -27,10 +27,17 @@ singleArgument =
     <|> SingleQuoted <$> surroundedBy "'"
     <|> Backticks <$> surroundedBy "`"
     <|> CommandSubstitution <$> try (string "$(" *> item <* char ')')
+    <|> Heredoc <$> try (string "<<<" *> heredocBody)
     <|> ProcessSubstitution <$> (char '<' *> surroundedByParens)
     <|> SingleQuoted <$> try (char '$' *> surroundedBy "'")
     <|> NotQuoted <$> some allowedCharsInBareWords
     <?> "single argument parser"
+
+heredocBody :: Parser String
+heredocBody =
+    surroundedBy "'"
+    <|> surroundedBy "\""
+    <|> some allowedCharsInBareWords
 
 allowedCharsInBareWords :: Parser Char
 allowedCharsInBareWords = satisfy (\c -> not (bad c) && isPrint c)

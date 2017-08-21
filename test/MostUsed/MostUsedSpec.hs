@@ -124,6 +124,24 @@ commonSpec description parser cmd = describe description $ do
 
                 successes parser s `shouldBe` result
 
+            it "parses a command with a heredoc" $ do
+                let s = cmd "cmd <<<hello"
+                let result = Command "cmd" [Heredoc "hello"]
+
+                successes parser s `shouldBe` [result]
+
+            it "parses a command with a multi-line single-quoted heredoc" $ do
+                let s = cmd "cmd <<<'hello\\nthere\\n'"
+                let result = Command "cmd" [Heredoc "hello\\nthere\\n"]
+
+                successes parser s `shouldBe` [result]
+
+            it "parses a command with a multi-line double-quoted heredoc" $ do
+                let s = cmd "cmd <<<\"hello\\nthere\\n\""
+                let result = Command "cmd" [Heredoc "hello\\nthere\\n"]
+
+                successes parser s `shouldBe` [result]
+
         describe "with multiple items, each of which is on one line" $ do
             it "parses commands with a variety of arguments" $ do
                 let s1 = cmd "c1 one `two` $(arg)"

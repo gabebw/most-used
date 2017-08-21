@@ -18,6 +18,7 @@ data Argument = DoubleQuoted String
               | Backticks String
               | CommandSubstitution Command
               | ProcessSubstitution String
+              | Heredoc String
               deriving (Eq)
 
 instance Show Argument where
@@ -27,3 +28,4 @@ instance Show Argument where
     show (Backticks s) = "`" ++ s ++ "`"
     show (CommandSubstitution c) = "$(" ++ show c ++ ")"
     show (ProcessSubstitution s) = "<(" ++ s ++ ")"
+    show (Heredoc s) = "<<<'" ++ s ++ "'"

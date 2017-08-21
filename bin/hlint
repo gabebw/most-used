@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Don't hlint the `test` directory because hlint really wants to remove as many
+# `do`s from the specs as possible, but I want to keep them because having a
+# common visual structure for all of the tests is nice.
+hlint src/ app/

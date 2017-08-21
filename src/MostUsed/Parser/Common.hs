@@ -26,9 +26,9 @@ singleArgument =
     DoubleQuoted <$> surroundedBy "\""
     <|> SingleQuoted <$> surroundedBy "'"
     <|> Backticks <$> surroundedBy "`"
-    <|> CommandSubstitution <$> try (string "$(" *> item <* char ')')
+    <|> CommandSubstitution <$> try (char '$' *> surroundedByParens item)
     <|> Heredoc <$> try (string "<<<" *> heredocBody)
-    <|> ProcessSubstitution <$> (char '<' *> surroundedByParens)
+    <|> ProcessSubstitution <$> (char '<' *> surroundedByParens item)
     <|> SingleQuoted <$> try (char '$' *> surroundedBy "'")
     <|> NotQuoted <$> bareWord
     <?> "single argument parser"
@@ -48,8 +48,8 @@ surroundedBy :: String -> Parser String
 surroundedBy s = between (string s) (string s) (many $ noneOf s)
     <?> ("surrounded by " ++ s)
 
-surroundedByParens :: Parser String
-surroundedByParens = between (char '(') (char ')') (many $ noneOf "()")
+surroundedByParens :: Parser a -> Parser a
+surroundedByParens p = char '(' *> p <* char ')'
     <?> "surrounded by parentheses"
 
 escapedNewline :: Parser String

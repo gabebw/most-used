@@ -86,9 +86,10 @@ commonSpec description parser cmd = describe description $ do
                 successes parser s `shouldBe` [result]
 
             it "parses a command with process substitution" $ do
-                let s = cmd "cmd <(one) <(two)"
-                let result = Command "cmd" [ProcessSubstitution "one"
-                                        , ProcessSubstitution "two"]
+                let s = cmd "cmd <(one 'a') <(two)"
+                let one = Command "one" [SingleQuoted "a"]
+                let two = Command "two" []
+                let result = Command "cmd" (map ProcessSubstitution [one, two])
                 successes parser s `shouldBe` [result]
 
             it "parses a command with a variety of arguments" $ do

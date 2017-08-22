@@ -25,7 +25,7 @@ main = do
 displaySuccesses :: [CommandName] -> Parser [Command] -> String -> IO ()
 displaySuccesses oIncludeFirstArgument p s = do
     let results = successes p s
-    let stats = prettyPrint $ findMostUsed oIncludeFirstArgument results
+    let stats = prettyPrint $ findMostUsed oIncludeFirstArgument (fanout results)
     putStr $ unlines stats
 
 displayFailures :: Parser [Command] -> String -> IO ()
@@ -49,11 +49,18 @@ buildMap :: [String] -> HashMap String Int -> HashMap String Int
 buildMap (s:ss) m = buildMap ss $ HM.insertWith (+) s 1 m
 buildMap [] m = m
 
-fanoutcommands :: [Command] -> [Command]
-fanoutcommands (c@(Command _ [CommandSubstitution csc]):xs) = c:csc:fanoutcommands xs
-fanoutcommands (c@(Command _ [ProcessSubstitution psc]):xs) = c:psc:fanoutcommands xs
-fanoutcommands _ = []
-fanoutcommands [] = []
+-- Given a list of commands, return the same list of commands PLUS all of the
+-- commands hiding inside each command's argument lists
+fanout :: [Command] -> [Command]
+fanout (c@(Command _ as):cs) = c : subCommands as ++ fanout cs
+fanout [] = []
+
+-- Get all subcommands from an argument list, descending as deep as necessary
+subCommands :: [Argument] -> [Command]
+subCommands (CommandSubstitution c@(Command _ as):xs) = c : subCommands as ++ subCommands xs
+subCommands (ProcessSubstitution c@(Command _ as):xs) = c : subCommands as ++ subCommands xs
+subCommands (_:xs) = subCommands xs
+subCommands [] = []
 
 -- Used when including first arg for some items. Dual-count them so one Command
 -- becomes "command" and "command firstArg".

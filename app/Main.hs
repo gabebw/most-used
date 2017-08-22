@@ -50,8 +50,9 @@ buildMap (s:ss) m = buildMap ss $ HM.insertWith (+) s 1 m
 buildMap [] m = m
 
 fanoutcommands :: [Command] -> [Command]
-fanoutcommands (c@(Command n (CommandSubstitution csc:_)):xs) = c:fanoutcommands csc
-fanoutcommands (Command n (ProcessSubstitution c:_):xs)
+fanoutcommands (c@(Command _ [CommandSubstitution csc]):xs) = c:csc:fanoutcommands xs
+fanoutcommands (c@(Command _ [ProcessSubstitution psc]):xs) = c:psc:fanoutcommands xs
+fanoutcommands _ = []
 fanoutcommands [] = []
 
 -- Used when including first arg for some items. Dual-count them so one Command
@@ -62,7 +63,5 @@ withFirstArg [] is = map M.commandName is
 withFirstArg _ [] = []
 withFirstArg includingFirst (Command n []:is) = n:withFirstArg includingFirst is
 withFirstArg includingFirst (Command n (a:_):is) = prefix ++ withFirstArg includingFirst is
-withFirstArg includingFirst (Command n (CommandSubstitution c:_):is) = prefix ++ withFirstArg includingFirst is
-withFirstArg includingFirst (Command n (ProcessSubstitution c:_):is) = prefix ++ withFirstArg includingFirst is
-
-prefix = if n `elem` includingFirst then [n ++ " " ++ show a, n] else [n]
+    where
+        prefix = if n `elem` includingFirst then [n ++ " " ++ show a, n] else [n]

@@ -49,6 +49,11 @@ buildMap :: [String] -> HashMap String Int -> HashMap String Int
 buildMap (s:ss) m = buildMap ss $ HM.insertWith (+) s 1 m
 buildMap [] m = m
 
+fanoutcommands :: [Command] -> [Command]
+fanoutcommands (c@(Command n (CommandSubstitution csc:_)):xs) = c:fanoutcommands csc
+fanoutcommands (Command n (ProcessSubstitution c:_):xs)
+fanoutcommands [] = []
+
 -- Used when including first arg for some items. Dual-count them so one Command
 -- becomes "command" and "command firstArg".
 -- Can be slow: O(size(includeFirstArgument) * size(items))
@@ -57,5 +62,7 @@ withFirstArg [] is = map M.commandName is
 withFirstArg _ [] = []
 withFirstArg includingFirst (Command n []:is) = n:withFirstArg includingFirst is
 withFirstArg includingFirst (Command n (a:_):is) = prefix ++ withFirstArg includingFirst is
-    where
-        prefix = if n `elem` includingFirst then [n ++ " " ++ show a, n] else [n]
+withFirstArg includingFirst (Command n (CommandSubstitution c:_):is) = prefix ++ withFirstArg includingFirst is
+withFirstArg includingFirst (Command n (ProcessSubstitution c:_):is) = prefix ++ withFirstArg includingFirst is
+
+prefix = if n `elem` includingFirst then [n ++ " " ++ show a, n] else [n]

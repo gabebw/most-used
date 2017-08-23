@@ -1,6 +1,5 @@
 module MostUsed.Parser.Common
-    ( item
-    , pipe
+    ( separatedItems
     ) where
 
 import Data.Char (isSpace, isPrint)
@@ -15,8 +14,17 @@ item = do
     args <- singleArgument `sepEndBy` separator
     return $ Command name args
 
+separatedItems :: Parser [Command]
+separatedItems = item `sepBy` itemSeparator <* skipMany semicolon
+
+itemSeparator :: Parser ()
+itemSeparator = pipe <|> semicolon
+
 pipe :: Parser ()
 pipe = space >> char '|' >> space
+
+semicolon :: Parser ()
+semicolon = space >> char ';' >> space
 
 separator :: Parser [String]
 separator = some (try escapedNewline <|> some spaceChar)
@@ -42,7 +50,7 @@ bareWord = some allowedCharsInBareWords
 allowedCharsInBareWords :: Parser Char
 allowedCharsInBareWords = satisfy (\c -> not (bad c) && isPrint c)
     where
-        bad c = c `elem` "|()'\"" || isSpace c
+        bad c = c `elem` "|()'\";" || isSpace c
 
 surroundedBy :: String -> Parser String
 surroundedBy s = between (string s) (string s) (many $ noneOf s)

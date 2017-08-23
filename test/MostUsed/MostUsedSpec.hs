@@ -107,6 +107,18 @@ commonSpec description parser cmd = describe description $ do
                              , Command "c2" [Backticks "two"]]
                 successes parser s `shouldBe` result
 
+            it "parses a line with multiple items separated by a semicolon" $ do
+                let s = cmd "c1 one  ;c2 `two`"
+                let result = [Command "c1" [NotQuoted "one"]
+                             , Command "c2" [Backticks "two"]]
+                successes parser s `shouldBe` result
+
+            it "parses a line with multiple items ending in a semicolon" $ do
+                let s = cmd "c1 one  ;c2 two;"
+                let result = [Command "c1" [NotQuoted "one"]
+                             , Command "c2" [NotQuoted "two"]]
+                successes parser s `shouldBe` result
+
             it "parses a line with @" $ do
                 let s = cmd "echo @gabebw"
                 let result = [Command "echo" [NotQuoted "@gabebw"]]

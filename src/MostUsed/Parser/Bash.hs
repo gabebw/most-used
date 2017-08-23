@@ -8,4 +8,4 @@ import Text.Megaparsec
 import Text.Megaparsec.String
 
 items :: Parser [Command]
-items = item `sepBy` pipe <* eof
+items = separatedItems <* eof

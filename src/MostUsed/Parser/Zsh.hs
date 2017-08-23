@@ -13,4 +13,4 @@ items = do
     void $ some spaceChar
     void $ some digitChar -- history number
     void $ string "  "
-    item `sepBy` pipe <* eof
+    separatedItems <* eof

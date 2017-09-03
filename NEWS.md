@@ -1,3 +1,7 @@
+## v0.0.6.1 (September 2, 2017)
+
+* Fix incorrect version
+
 ## v0.0.6 (August 21, 2017)
 
 * Parse Bash history, not just Zsh history

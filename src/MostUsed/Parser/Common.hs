@@ -10,6 +10,10 @@ import Text.Megaparsec.String
 
 items :: Parser [Command]
 items = item `sepByAnyOf` commandSeparators <* eof
+    where
+        commandSeparators = map surroundedBySpace ['|', ';']
+        surroundedBySpace :: Char -> Parser ()
+        surroundedBySpace c = space >> char c >> space
 
 -- This is exactly like `sepBy`, but with multiple possible separators.
 sepByAnyOf :: Alternative m => m a -> [m b] -> m [a]
@@ -19,20 +23,11 @@ item :: Parser Command
 item = do
     name <- bareWord
     space
-    args <- singleArgument `sepEndBy` separator
+    args <- singleArgument `sepEndBy` argumentSeparator
     return $ Command name args
 
-commandSeparators :: [Parser ()]
-commandSeparators = [pipe, semicolon]
-
-semicolon :: Parser ()
-semicolon = space >> char ';' >> space
-
-pipe :: Parser ()
-pipe = space >> char '|' >> space
-
-separator :: Parser [String]
-separator = some (try escapedNewline <|> some spaceChar)
+argumentSeparator :: Parser [String]
+argumentSeparator = some (try escapedNewline <|> some spaceChar)
 
 singleArgument :: Parser Argument
 singleArgument =

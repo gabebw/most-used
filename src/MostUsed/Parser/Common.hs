@@ -1,12 +1,19 @@
 module MostUsed.Parser.Common
-    ( item
-    , pipe
+    ( items
     ) where
 
+import Control.Applicative (Alternative(..))
 import Data.Char (isSpace, isPrint)
 import MostUsed.Types
 import Text.Megaparsec
 import Text.Megaparsec.String
+
+items :: Parser [Command]
+items = item `sepByAnyOf` commandSeparators <* eof
+
+-- This is exactly like `sepBy`, but with multiple possible separators.
+sepByAnyOf :: Alternative m => m a -> [m b] -> m [a]
+sepByAnyOf p seps = (:) <$> p <*> many (choice (map (*> p) seps))
 
 item :: Parser Command
 item = do
@@ -14,6 +21,12 @@ item = do
     space
     args <- singleArgument `sepEndBy` separator
     return $ Command name args
+
+commandSeparators :: [Parser ()]
+commandSeparators = [pipe, semicolon]
+
+semicolon :: Parser ()
+semicolon = space >> char ';' >> space
 
 pipe :: Parser ()
 pipe = space >> char '|' >> space

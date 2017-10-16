@@ -143,18 +143,35 @@ commonSpec description parser cmd = describe description $ do
 
                 successes parser s `shouldBe` [result]
 
-        describe "with multiple items, each of which is on one line" $ do
-            it "parses commands with a variety of arguments" $ do
-                let s1 = cmd "c1 one `two` $(arg)"
-                let s2 = cmd "c2 '3 x' \"4 y\""
-                let s3 = cmd "c3"
-                let s = intercalate "\n" [s1, s2, s3]
-                let i1 = Command "c1" [NotQuoted "one"
-                                   , Backticks "two"
-                                   , CommandSubstitution (Command "arg" [])]
-                let i2 = Command "c2" [SingleQuoted "3 x"
-                                   , DoubleQuoted "4 y"]
-                successes parser s `shouldBe` [i1, i2, Command "c3" []]
+        describe "with multiple items" $ do
+            describe "each of which is on its own line" $ do
+                it "parses commands with a variety of arguments" $ do
+                    let s1 = cmd "c1 one `two` $(arg)"
+                    let s2 = cmd "c2 '3 x' \"4 y\""
+                    let s3 = cmd "c3"
+                    let s = intercalate "\n" [s1, s2, s3]
+                    let i1 = Command "c1" [NotQuoted "one"
+                                    , Backticks "two"
+                                    , CommandSubstitution (Command "arg" [])]
+                    let i2 = Command "c2" [SingleQuoted "3 x"
+                                    , DoubleQuoted "4 y"]
+                    successes parser s `shouldBe` [i1, i2, Command "c3" []]
+
+            describe "separated by a semicolon" $ do
+                it "parses commands with a variety of arguments" $ do
+                    let s1 = "c1 one `two` $(arg)"
+                    let s2 = "c2 '3 x' \"4 y\""
+                    let s3 = "c3"
+                    -- Note that there's only one `cmd` prefix, since Zsh only
+                    -- adds the prefix for items on a new line, and these items
+                    -- are all on the same line.
+                    let s = cmd $ intercalate ";" [s1, s2, s3]
+                    let i1 = Command "c1" [NotQuoted "one"
+                                    , Backticks "two"
+                                    , CommandSubstitution (Command "arg" [])]
+                    let i2 = Command "c2" [SingleQuoted "3 x"
+                                    , DoubleQuoted "4 y"]
+                    successes parser s `shouldBe` [i1, i2, Command "c3" []]
 
         it "can parse something with a bare escaped newline" $ do
             let s = cmd "fc -lDt 1 \\n"

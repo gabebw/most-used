@@ -3,7 +3,7 @@ module MostUsed.Parser.Zsh
     ) where
 
 import Control.Monad (void)
-import MostUsed.Parser.Common
+import qualified MostUsed.Parser.Common as Common (items)
 import MostUsed.Types
 import Text.Megaparsec
 import Text.Megaparsec.String
@@ -13,4 +13,4 @@ items = do
     void $ some spaceChar
     void $ some digitChar -- history number
     void $ string "  "
-    item `sepBy` pipe <* eof
+    Common.items

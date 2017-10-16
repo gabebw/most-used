@@ -26,8 +26,8 @@ item = do
     args <- singleArgument `sepEndBy` argumentSeparator
     return $ Command name args
 
-argumentSeparator :: Parser [String]
-argumentSeparator = some (try escapedNewline <|> some spaceChar)
+argumentSeparator :: Parser ()
+argumentSeparator = skipSome $ escapedNewline <|> some spaceChar
 
 singleArgument :: Parser Argument
 singleArgument =

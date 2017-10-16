@@ -16,7 +16,7 @@ items = item `sepByAnyOf` commandSeparators <* eof
         surroundedBySpace c = space >> char c >> space
 
 -- This is exactly like `sepBy`, but with multiple possible separators.
-sepByAnyOf :: Alternative m => m a -> [m b] -> m [a]
+sepByAnyOf :: Alternative m => m a -> [m sep] -> m [a]
 sepByAnyOf p seps = (:) <$> p <*> many (choice (map (*> p) seps))
 
 item :: Parser Command

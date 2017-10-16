@@ -5,8 +5,9 @@ module MostUsed.MostUsedSpec
 
 import           Data.List              (intercalate)
 import           MostUsed
-import           MostUsed.Parser.Bash   as Bash
-import           MostUsed.Parser.Zsh    as Zsh
+import qualified MostUsed.Parser.Bash   as Bash
+import qualified MostUsed.Parser.Zsh    as Zsh
+import           MostUsed.Types
 import           Test.Hspec
 import           Text.Megaparsec.String
 

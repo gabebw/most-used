@@ -4,10 +4,10 @@ module MostUsed.CLI
     )
     where
 
-import           Data.Maybe
+import           Data.Maybe          (fromMaybe)
 import           Data.Monoid         ((<>))
-import           MostUsed
-import           MostUsed.Version
+import           MostUsed.Types
+import           MostUsed.Version    (version)
 import           Options.Applicative
 
 data Options = Options

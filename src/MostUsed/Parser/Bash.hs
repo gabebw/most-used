@@ -3,9 +3,8 @@ module MostUsed.Parser.Bash
     ) where
 
 import qualified MostUsed.Parser.Common as Common (items)
-import           MostUsed.Types
-import           Text.Megaparsec
-import           Text.Megaparsec.String
+import           MostUsed.Types         (Command)
+import           Text.Megaparsec.String (Parser)
 
 items :: Parser [Command]
 items = Common.items

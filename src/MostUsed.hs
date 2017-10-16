@@ -1,14 +1,13 @@
 module MostUsed
-    ( successes
-    , failures
-    , module MostUsed.Types
+    ( failures
+    , successes
     ) where
 
-import           Data.Bifunctor
+import           Data.Bifunctor         (first)
 import           Data.Either            (lefts, rights)
 import           MostUsed.Types
-import           Text.Megaparsec
-import           Text.Megaparsec.String
+import           Text.Megaparsec        (parse, parseErrorPretty)
+import           Text.Megaparsec.String (Parser)
 
 successes :: Parser [Command] -> String -> [Command]
 successes parser s = mconcat $ rights $ successesAndFailures parser $ lines s

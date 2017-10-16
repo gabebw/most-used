@@ -6,7 +6,7 @@ import           Control.Applicative    (Alternative (..))
 import           Data.Char              (isPrint, isSpace)
 import           MostUsed.Types
 import           Text.Megaparsec
-import           Text.Megaparsec.String
+import           Text.Megaparsec.String (Parser)
 
 items :: Parser [Command]
 items = item `sepByAnyOf` commandSeparators <* eof

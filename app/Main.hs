@@ -8,10 +8,11 @@ import           Data.HashMap.Strict    (HashMap)
 import qualified Data.HashMap.Strict    as HM
 import           Data.List
 import           Data.Ord               (Down (..), comparing)
-import           MostUsed               as M
+import           MostUsed
 import           MostUsed.CLI
 import qualified MostUsed.Parser.Bash   as Bash
 import qualified MostUsed.Parser.Zsh    as Zsh
+import           MostUsed.Types         as M
 import           Text.Megaparsec.String
 
 main :: IO ()

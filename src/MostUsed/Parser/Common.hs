@@ -2,11 +2,11 @@ module MostUsed.Parser.Common
     ( items
     ) where
 
-import Control.Applicative (Alternative(..))
-import Data.Char (isSpace, isPrint)
-import MostUsed.Types
-import Text.Megaparsec
-import Text.Megaparsec.String
+import           Control.Applicative    (Alternative (..))
+import           Data.Char              (isPrint, isSpace)
+import           MostUsed.Types
+import           Text.Megaparsec
+import           Text.Megaparsec.String
 
 items :: Parser [Command]
 items = item `sepByAnyOf` commandSeparators <* eof

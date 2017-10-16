@@ -3,12 +3,12 @@ module MostUsed.MostUsedSpec
     , spec
     ) where
 
-import Data.List (intercalate)
-import MostUsed
-import MostUsed.Parser.Bash as Bash
-import MostUsed.Parser.Zsh as Zsh
-import Test.Hspec
-import Text.Megaparsec.String
+import           Data.List              (intercalate)
+import           MostUsed
+import           MostUsed.Parser.Bash   as Bash
+import           MostUsed.Parser.Zsh    as Zsh
+import           Test.Hspec
+import           Text.Megaparsec.String
 
 main :: IO ()
 main = hspec spec

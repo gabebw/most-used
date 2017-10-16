@@ -1,17 +1,18 @@
-{-# LANGUAGE NamedFieldPuns, RecordWildCards #-}
+{-# LANGUAGE NamedFieldPuns  #-}
+{-# LANGUAGE RecordWildCards #-}
 module Main
     ( main
     ) where
 
-import Data.List
-import Data.Ord (comparing, Down(..))
-import MostUsed as M
-import MostUsed.CLI
-import Text.Megaparsec.String
-import Data.HashMap.Strict (HashMap)
-import qualified Data.HashMap.Strict as HM
-import qualified MostUsed.Parser.Bash as Bash
-import qualified MostUsed.Parser.Zsh as Zsh
+import           Data.HashMap.Strict    (HashMap)
+import qualified Data.HashMap.Strict    as HM
+import           Data.List
+import           Data.Ord               (Down (..), comparing)
+import           MostUsed               as M
+import           MostUsed.CLI
+import qualified MostUsed.Parser.Bash   as Bash
+import qualified MostUsed.Parser.Zsh    as Zsh
+import           Text.Megaparsec.String
 
 main :: IO ()
 main = do
@@ -34,7 +35,7 @@ displayFailures p s = do
     putStrLn $ unlines $ failures p s
 
 parser :: Shell -> Parser [Command]
-parser Zsh = Zsh.items
+parser Zsh  = Zsh.items
 parser Bash = Bash.items
 
 prettyPrint :: [(String, Int)] -> [String]
@@ -47,7 +48,7 @@ findMostUsed includeFirstArgument items = sortBy (comparing (Down . snd)) $
 
 buildMap :: [String] -> HashMap String Int -> HashMap String Int
 buildMap (s:ss) m = buildMap ss $ HM.insertWith (+) s 1 m
-buildMap [] m = m
+buildMap [] m     = m
 
 -- Used when including first arg for some items. Dual-count them so one Command
 -- becomes "command" and "command firstArg".

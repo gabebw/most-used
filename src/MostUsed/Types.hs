@@ -22,10 +22,10 @@ data Argument = DoubleQuoted String
               deriving (Eq)
 
 instance Show Argument where
-    show (DoubleQuoted s) = "\"" ++ s ++ "\""
-    show (SingleQuoted s) = "'" ++ s ++ "'"
-    show (NotQuoted s) = s
-    show (Backticks s) = "`" ++ s ++ "`"
+    show (DoubleQuoted s)        = "\"" ++ s ++ "\""
+    show (SingleQuoted s)        = "'" ++ s ++ "'"
+    show (NotQuoted s)           = s
+    show (Backticks s)           = "`" ++ s ++ "`"
     show (CommandSubstitution c) = "$(" ++ show c ++ ")"
     show (ProcessSubstitution c) = "<(" ++ show c ++ ")"
-    show (Heredoc s) = "<<<'" ++ s ++ "'"
+    show (Heredoc s)             = "<<<'" ++ s ++ "'"

@@ -4,16 +4,16 @@ module MostUsed.CLI
     )
     where
 
-import Data.Maybe
-import Data.Monoid ((<>))
-import MostUsed
-import MostUsed.Version
-import Options.Applicative
+import           Data.Maybe
+import           Data.Monoid         ((<>))
+import           MostUsed
+import           MostUsed.Version
+import           Options.Applicative
 
 data Options = Options
     { oIncludeFirstArgument :: [CommandName]
-    , oDebug :: Bool
-    , oShell :: Shell
+    , oDebug                :: Bool
+    , oShell                :: Shell
     }
 
 parseCLI :: IO Options
@@ -57,8 +57,8 @@ parseShell = fmap (fromMaybe Zsh) $ optional $ shell <$> o
 
 shell :: String -> Shell
 shell "bash" = Bash
-shell "zsh" = Zsh
-shell _ = Zsh
+shell "zsh"  = Zsh
+shell _      = Zsh
 
 parseDebug :: Parser Bool
 parseDebug = switch $

@@ -3,4 +3,4 @@ module MostUsed.Version
     ) where
 
 version :: String
-version = "0.0.6.1"
+version = "0.0.7.1"

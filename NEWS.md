@@ -1,6 +1,15 @@
+## v0.0.7.1 (October 15 2017)
+
+* Fix version string so `--version` returns the correct version
+
+## v0.0.7 (October 15 2017)
+
+* The program learned to use semicolons as command delimiters, so that
+  `foo; bar` is understood as two commands (#34, #36)
+
 ## v0.0.6.1 (September 2, 2017)
 
-* Fix incorrect version
+* Fix version string so `--version` returns the correct version
 
 ## v0.0.6 (August 21, 2017)
 

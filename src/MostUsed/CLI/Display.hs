@@ -1,6 +1,6 @@
 module MostUsed.CLI.Display
-    ( displayFailures
-    , displaySuccesses
+    ( failedParses
+    , successfulParses
     ) where
 
 import qualified Data.HashMap.Strict    as HM
@@ -11,16 +11,16 @@ import           MostUsed.CLI.Util      (buildMap)
 import           MostUsed.Types         as M
 import           Text.Megaparsec.String (Parser)
 
-displaySuccesses :: [CommandName] -> Parser [Command] -> String -> IO ()
-displaySuccesses oIncludeFirstArgument p s = do
-    let results = successes p s
-    let stats = prettyPrint $ findMostUsed oIncludeFirstArgument results
-    putStr $ unlines stats
+successfulParses :: [CommandName] -> Parser [Command] -> String -> String
+successfulParses includeFirstArgument p s = unlines stats
+    where
+        stats = prettyPrint $ findMostUsed includeFirstArgument results
+        results = successes p s
 
-displayFailures :: Parser [Command] -> String -> IO ()
-displayFailures p s = do
-    putStrLn "\n!!! The following lines could not be parsed:\n\n"
-    putStrLn $ unlines $ failures p s
+failedParses :: Parser [Command] -> String -> String
+failedParses p s = unlines $ warning : failures p s
+    where
+        warning = "\n!!! The following lines could not be parsed:\n\n"
 
 prettyPrint :: [(String, Int)] -> [String]
 prettyPrint stats = map (\(count, n) -> show n ++ " " ++ count) stats

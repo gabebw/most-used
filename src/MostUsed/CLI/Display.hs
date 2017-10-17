@@ -1,4 +1,4 @@
-module MostUsed.CLI.Display
+odule MostUsed.CLI.Display
     ( failedParses
     , successfulParses
     ) where

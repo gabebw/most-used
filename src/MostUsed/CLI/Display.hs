@@ -1,4 +1,4 @@
-odule MostUsed.CLI.Display
+module MostUsed.CLI.Display
     ( failedParses
     , successfulParses
     ) where
@@ -20,7 +20,7 @@ successfulParses includeFirstArgument p s = unlines stats
 failedParses :: Parser [Command] -> String -> String
 failedParses p s = unlines $ warning : failures p s
     where
-        warning = "\n!!! The following lines could not be parsed:\n\n"
+        warning = "\n!!! The following lines could not be parsed:\n\n\n"
 
 prettyPrint :: [(String, Int)] -> [String]
 prettyPrint stats = map (\(count, n) -> show n ++ " " ++ count) stats

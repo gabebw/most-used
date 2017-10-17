@@ -20,7 +20,7 @@ main = do
     let display = if oDebug
         then failedParses
         else successfulParses oIncludeFirstArgument
-    putStr $ display (parser oShell) stdinContents
+    putStrLn $ display (parser oShell) stdinContents
 
 parser :: Shell -> Parser [Command]
 parser Bash = B.items

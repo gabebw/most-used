@@ -6,8 +6,8 @@ module Main
     ) where
 
 import           MostUsed
-import           MostUsed.CLI           (Options (..), parseCLI)
 import           MostUsed.CLI.Display   (displayFailures, displaySuccesses)
+import           MostUsed.CLI.Parser    (Options (..), parseCLI)
 import qualified MostUsed.Parser.Bash   as B
 import qualified MostUsed.Parser.Zsh    as Z
 import           MostUsed.Types         (Command, Shell (Bash, Zsh))
@@ -17,10 +17,10 @@ main :: IO ()
 main = do
     Options{..} <- parseCLI
     stdinContents <- getContents
-    let f = if oDebug
-            then displayFailures
-            else displaySuccesses oIncludeFirstArgument
-    f (parser oShell) stdinContents
+    let display = if oDebug
+        then displayFailures
+        else displaySuccesses oIncludeFirstArgument
+    display (parser oShell) stdinContents
 
 parser :: Shell -> Parser [Command]
 parser Bash = B.items

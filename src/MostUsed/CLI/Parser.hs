@@ -1,4 +1,4 @@
-module MostUsed.CLI
+module MostUsed.CLI.Parser
     ( parseCLI
     )
     where

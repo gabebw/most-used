@@ -1,6 +1,6 @@
 module MostUsed.CLI.Display
-    ( displaySuccesses
-    , displayFailures
+    ( displayFailures
+    , displaySuccesses
     ) where
 
 import qualified Data.HashMap.Strict    as HM

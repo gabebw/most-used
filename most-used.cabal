@@ -16,8 +16,8 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     MostUsed
-                     , MostUsed.CLI
                      , MostUsed.CLI.Display
+                     , MostUsed.CLI.Parser
                      , MostUsed.CLI.Util
                      , MostUsed.Parser.Bash
                      , MostUsed.Parser.Common

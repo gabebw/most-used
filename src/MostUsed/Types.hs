@@ -3,6 +3,7 @@ module MostUsed.Types
     , Argument(..)
     , Command(..)
     , Shell(..)
+    , Options(..)
     ) where
 
 type CommandName = String
@@ -29,3 +30,9 @@ instance Show Argument where
     show (CommandSubstitution c) = "$(" ++ show c ++ ")"
     show (ProcessSubstitution c) = "<(" ++ show c ++ ")"
     show (Heredoc s)             = "<<<'" ++ s ++ "'"
+
+data Options = Options
+    { oIncludeFirstArgument :: [CommandName]
+    , oDebug                :: Bool
+    , oShell                :: Shell
+    }

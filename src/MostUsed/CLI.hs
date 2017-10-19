@@ -1,6 +1,5 @@
 module MostUsed.CLI
     ( parseCLI
-    , Options(..)
     )
     where
 
@@ -9,12 +8,6 @@ import           Data.Monoid         ((<>))
 import           MostUsed.Types
 import           MostUsed.Version    (version)
 import           Options.Applicative
-
-data Options = Options
-    { oIncludeFirstArgument :: [CommandName]
-    , oDebug                :: Bool
-    , oShell                :: Shell
-    }
 
 parseCLI :: IO Options
 parseCLI =

@@ -23,8 +23,8 @@ library
                      , MostUsed.Types
                      , MostUsed.Version
   build-depends:       base >= 4.7 && < 5
-                     , megaparsec == 5.2.0
-                     , optparse-applicative == 0.13.2.0
+                     , megaparsec >9 && <10
+                     , optparse-applicative >= 0.13.2.0 && < 0.17
   default-language:    Haskell2010
 
 executable most-used-exe
@@ -33,8 +33,8 @@ executable most-used-exe
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , most-used
-                     , megaparsec == 5.2.0
-                     , unordered-containers == 0.2.8.0
+                     , megaparsec >9 && <10
+                     , unordered-containers
   default-language:    Haskell2010
 
 test-suite spec
@@ -46,7 +46,7 @@ test-suite spec
   build-depends:
       base == 4.*
     , hspec == 2.*
-    , megaparsec == 5.2.0
+    , megaparsec >9 && <10
     , most-used
   other-modules: MostUsed.MostUsedSpec
   default-language: Haskell2010

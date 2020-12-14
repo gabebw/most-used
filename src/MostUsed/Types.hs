@@ -1,12 +1,18 @@
 module MostUsed.Types
     ( CommandName
+    , Parser
     , Argument(..)
     , Command(..)
     , Shell(..)
     , Options(..)
     ) where
 
+import Text.Megaparsec
+import Data.Void
+
 type CommandName = String
+
+type Parser = Parsec Void String
 
 data Shell = Zsh | Bash
 

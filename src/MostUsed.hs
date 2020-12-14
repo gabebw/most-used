@@ -7,7 +7,6 @@ import           Data.Bifunctor         (first)
 import           Data.Either            (lefts, rights)
 import           MostUsed.Types
 import           Text.Megaparsec        (parse, parseErrorPretty)
-import           Text.Megaparsec.String (Parser)
 
 successes :: Parser [Command] -> String -> [Command]
 successes parser s = mconcat $ rights $ successesAndFailures parser $ lines s

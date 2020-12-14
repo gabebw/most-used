@@ -2,11 +2,12 @@ module MostUsed.Parser.Common
     ( items
     ) where
 
-import           Control.Applicative    (Alternative (..))
 import           Data.Char              (isPrint, isSpace)
 import           MostUsed.Types
-import           Text.Megaparsec
-import           Text.Megaparsec.String (Parser)
+import Text.Megaparsec
+import Text.Megaparsec.Char
+import qualified Control.Applicative as CA
+import Control.Monad (MonadPlus)
 
 items :: Parser [Command]
 items = item `sepByAnyOf` commandSeparators <* eof
@@ -16,7 +17,7 @@ items = item `sepByAnyOf` commandSeparators <* eof
         surroundedBySpace c = space >> char c >> space
 
 -- This is exactly like `sepBy`, but with multiple possible separators.
-sepByAnyOf :: Alternative m => m a -> [m sep] -> m [a]
+sepByAnyOf :: (CA.Alternative m, MonadPlus m) => m a -> [m sep] -> m [a]
 sepByAnyOf p seps = (:) <$> p <*> many (choice (map (*> p) seps))
 
 item :: Parser Command

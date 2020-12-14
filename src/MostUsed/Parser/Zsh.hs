@@ -4,9 +4,9 @@ module MostUsed.Parser.Zsh
 
 import           Control.Monad          (void)
 import qualified MostUsed.Parser.Common as Common (items)
-import           MostUsed.Types         (Command)
-import           Text.Megaparsec        (digitChar, skipSome, spaceChar, string)
-import           Text.Megaparsec.String (Parser)
+import           MostUsed.Types         (Command, Parser())
+import           Text.Megaparsec.Char   (digitChar, spaceChar, string)
+import           Text.Megaparsec        (skipSome)
 
 items :: Parser [Command]
 items = do
